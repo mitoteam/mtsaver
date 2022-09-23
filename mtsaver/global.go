@@ -1,5 +1,13 @@
 package mtsaver
 
+import "runtime"
+
 var (
-	Version = "1.0.0-alpha"
+	AppName   = "mtsaver"
+	Version   = "1.0.0-alpha"
+	BuiltWith string
 )
+
+func init() {
+	BuiltWith = runtime.Version()
+}

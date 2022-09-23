@@ -10,7 +10,7 @@ import (
 var CmdVersion = cli.Command{
 	Name:    "version",
 	Aliases: []string{"v"},
-	Usage:   "Print versino number",
+	Usage:   "Print version number",
 	Action: func(ctx *cli.Context) error {
 		fmt.Println(mtsaver.Version)
 		return nil

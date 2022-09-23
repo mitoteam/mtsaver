@@ -12,17 +12,18 @@ import (
 func main() {
 	app := cli.App{
 		Version:     mtsaver.Version,
-		Name:        "mtsaver",
+		Name:        mtsaver.AppName,
 		Copyright:   "MiTo Team, https://mito-team.com",
 		Description: "7-Zip based backup arhives retension",
 		Usage:       "backup arhives retension",
 
-		Commands: []*cli.Command{
-			&cmd.CmdVersion,
-		},
-
 		//default action
 		Action: cmd.CmdVersion.Action,
+
+		Commands: []*cli.Command{
+			&cmd.CmdVersion,
+			&cmd.CmdInfo,
+		},
 	}
 
 	err := app.Run(os.Args)
