@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"mtsaver/cmd"
-	"mtsaver/mtsaver"
+	mtsaver "mtsaver/main"
 	"os"
 
 	"github.com/urfave/cli/v2"

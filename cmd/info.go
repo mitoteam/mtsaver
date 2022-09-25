@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"mtsaver/mtsaver"
+	mtsaver "mtsaver/main"
 
 	"github.com/urfave/cli/v2"
 )
