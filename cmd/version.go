@@ -12,7 +12,7 @@ var CmdVersion = cli.Command{
 	Aliases: []string{"v"},
 	Usage:   "Print version number",
 	Action: func(ctx *cli.Context) error {
-		fmt.Println(mtsaver.Version)
+		fmt.Println(mtsaver.Global.Version)
 		return nil
 	},
 }
