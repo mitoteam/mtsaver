@@ -4,15 +4,18 @@ import (
 	"fmt"
 	mtsaver "mtsaver/main"
 
-	"github.com/urfave/cli/v2"
+	"github.com/spf13/cobra"
 )
 
-var CmdVersion = cli.Command{
-	Name:    "version",
-	Aliases: []string{"v"},
-	Usage:   "Print version number",
-	Action: func(ctx *cli.Context) error {
+func init() {
+	rootCmd.AddCommand(versionCmd)
+}
+
+var versionCmd = &cobra.Command{
+	Use:   "version",
+	Short: "Print the raw version number of " + mtsaver.Global.AppName,
+
+	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println(mtsaver.Global.Version)
-		return nil
 	},
 }

@@ -8,7 +8,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/urfave/cli/v2"
+	"github.com/spf13/cobra"
 )
 
 var Global struct {
@@ -25,9 +25,7 @@ func init() {
 	Global.BuiltWith = runtime.Version()
 }
 
-func SetupBeforeCommand(ctx *cli.Context) error {
-	Global.SevenZipCmd = ctx.String("7zip")
-
+func SetupBeforeCommand(cmd *cobra.Command, args []string) {
 	if Global.SevenZipCmd == "auto" {
 		Global.SevenZipCmd = "" //reset to force autodetection
 	}
@@ -64,8 +62,6 @@ func SetupBeforeCommand(ctx *cli.Context) error {
 			log.Fatalln("Can not find 7-Zip. Please provide correct path with --7zip flag.")
 		}
 	}
-
-	return nil
 }
 
 func checkSevenZipCommand(cmd string) bool {

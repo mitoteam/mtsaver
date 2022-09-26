@@ -3,15 +3,26 @@ package cmd
 import (
 	mtsaver "mtsaver/main"
 
-	"github.com/urfave/cli/v2"
+	"github.com/spf13/cobra"
 )
 
-var CmdRun = cli.Command{
-	Name:      "run",
-	Usage:     "Runs backup procedure for path",
-	ArgsUsage: "/path/to/directory",
-	Action: func(ctx *cli.Context) error {
-		job, err := mtsaver.NewJob(ctx.Args().Get(0))
+func init() {
+	rootCmd.AddCommand(runCmd)
+}
+
+var runCmd = &cobra.Command{
+	Use:   "run [/path/to/directory]",
+	Short: "Runs backup procedure for path. If no path is given current directory is used.",
+
+	RunE: func(cmd *cobra.Command, args []string) error {
+		var path string
+		if len(args) > 0 {
+			path = args[0]
+		} else {
+			path = "." //current directory
+		}
+
+		job, err := mtsaver.NewJob(path)
 		if err != nil {
 			return err
 		}
