@@ -3,10 +3,10 @@ package mtsaver
 import (
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"time"
 )
 
@@ -33,7 +33,6 @@ func NewJob(path string) (*Job, error) {
 	}
 
 	job.LoadSettings()
-	log.Fatal(job.Settings)
 
 	return job, nil
 }
@@ -49,10 +48,13 @@ func (job *Job) Run() error {
 	var seven_zip_arguments = []string{
 		"a",                      //add
 		job.GetFullArchiveName(), //arch name
-		job.Path,                 //folder
-		"-ssw",                   //Compress files open for writing
-		//"-xr!.git",               //exclude git
-		//"-xr!*.exe",              //exclude exe
+		job.Path + string(filepath.Separator) + "*", //folder
+		"-ssw", //Compress files open for writing
+		"-mx" + strconv.Itoa(job.Settings.CompressionLevel), //compression level
+	}
+
+	for _, pattern := range job.Settings.Exclude {
+		seven_zip_arguments = append(seven_zip_arguments, "-xr!"+pattern)
 	}
 
 	cmd := exec.Command(Global.SevenZipCmd, seven_zip_arguments...)
@@ -78,7 +80,7 @@ func (job *Job) LoadSettings() {
 
 	name := filepath.Base(job.Path)
 
-	if len(s.DateFormat) == 0 {
+	if s.DateFormat == "" {
 		s.DateFormat = "2006-01-02_15-04-05"
 	}
 

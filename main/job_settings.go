@@ -17,6 +17,7 @@ type JobSettings struct {
 	DiffSuffix       string
 	DateFormat       string
 	CompressionLevel int `yaml:"compression_level"`
+	Exclude          []string
 }
 
 func (job_settings *JobSettings) LoadFromDir(dirPath string) {

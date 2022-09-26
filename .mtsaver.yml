@@ -1,1 +1,5 @@
 compression_level: 9
+exclude:
+  - ".vscode"
+  - ".git"
+  - "*.exe"
