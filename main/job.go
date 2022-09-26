@@ -3,6 +3,7 @@ package mtsaver
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -38,18 +39,14 @@ func NewJob(path string) (*Job, error) {
 }
 
 func (job *Job) Run() error {
-	fmt.Println("ArchivesPath: " + job.Settings.ArchivesPath)
-	fmt.Println("GetFullArchiveName: " + job.GetFullArchiveName())
-
 	if err := os.MkdirAll(job.Settings.ArchivesPath, 0777); err != nil {
 		return err
 	}
 
 	var seven_zip_arguments = []string{
-		"a",                      //add
-		job.GetFullArchiveName(), //arch name
-		job.Path + string(filepath.Separator) + "*", //folder
-		"-ssw", //Compress files open for writing
+		"u",                      //add
+		job.getArchiveName(true), //arch name
+		"-ssw",                   //Compress files open for writing
 		"-mx" + strconv.Itoa(job.Settings.CompressionLevel), //compression level
 	}
 
@@ -57,17 +54,33 @@ func (job *Job) Run() error {
 		seven_zip_arguments = append(seven_zip_arguments, "-xr!"+pattern)
 	}
 
+	// final argument - folder to pack
+	seven_zip_arguments = append(
+		seven_zip_arguments,
+		job.Path+string(filepath.Separator)+"*",
+	)
+
+	//run command
 	cmd := exec.Command(Global.SevenZipCmd, seven_zip_arguments...)
+	//fmt.Println("CMD: " + cmd.String())
 	output, _ := cmd.CombinedOutput()
 	fmt.Println(string(output))
 
 	return nil
 }
 
-func (job *Job) GetFullArchiveName() string {
+func (job *Job) getArchiveName(full bool) string {
+	var suffix string
+
+	if full {
+		suffix = job.Settings.FullSuffix
+	} else {
+		suffix = job.Settings.DiffSuffix
+	}
+
 	return job.Settings.ArchivesPath + string(filepath.Separator) +
 		job.Settings.ArchiveName + "_" + time.Now().Format(job.Settings.DateFormat) +
-		"_" + job.Settings.FullSuffix + ".7z"
+		"_" + suffix + ".7z"
 }
 
 func (job *Job) LoadSettings() {
@@ -102,5 +115,10 @@ func (job *Job) LoadSettings() {
 
 	if s.CompressionLevel == -1 {
 		s.CompressionLevel = 5
+	}
+
+	// Do settings checks
+	if s.FullSuffix == s.DiffSuffix {
+		log.Fatalln("Full suffix should differ from diff suffix")
 	}
 }
