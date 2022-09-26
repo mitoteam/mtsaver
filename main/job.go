@@ -3,6 +3,7 @@ package mtsaver
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -10,12 +11,8 @@ import (
 )
 
 type Job struct {
-	Path         string
-	ArchivesPath string
-	ArchiveName  string
-	FullSuffix   string
-	Diffsuffix   string
-	DateFormat   string
+	Path     string
+	Settings JobSettings
 }
 
 func NewJob(path string) (*Job, error) {
@@ -30,25 +27,22 @@ func NewJob(path string) (*Job, error) {
 	}
 
 	full_path, _ := filepath.Abs(path)
-	name := filepath.Base(full_path)
 
 	var job = &Job{
-		Path:         full_path,
-		DateFormat:   "2006-01-02_15-04-05",
-		ArchiveName:  name,
-		ArchivesPath: filepath.Dir(full_path) + string(filepath.Separator) + name + "_ARCHIVE",
-		FullSuffix:   "FULL",
-		Diffsuffix:   "DIFF",
+		Path: full_path,
 	}
+
+	job.LoadSettings()
+	log.Fatal(job.Settings)
 
 	return job, nil
 }
 
 func (job *Job) Run() error {
-	fmt.Println("ArchivesPath: " + job.ArchivesPath)
+	fmt.Println("ArchivesPath: " + job.Settings.ArchivesPath)
 	fmt.Println("GetFullArchiveName: " + job.GetFullArchiveName())
 
-	if err := os.MkdirAll(job.ArchivesPath, 0777); err != nil {
+	if err := os.MkdirAll(job.Settings.ArchivesPath, 0777); err != nil {
 		return err
 	}
 
@@ -69,5 +63,42 @@ func (job *Job) Run() error {
 }
 
 func (job *Job) GetFullArchiveName() string {
-	return job.ArchivesPath + string(filepath.Separator) + job.ArchiveName + "_" + time.Now().Format(job.DateFormat) + "_" + job.FullSuffix + ".7z"
+	return job.Settings.ArchivesPath + string(filepath.Separator) +
+		job.Settings.ArchiveName + "_" + time.Now().Format(job.Settings.DateFormat) +
+		"_" + job.Settings.FullSuffix + ".7z"
+}
+
+func (job *Job) LoadSettings() {
+	job.Settings = JobSettings{
+		CompressionLevel: -1,
+	}
+
+	job.Settings.LoadFromDir(job.Path)
+	var s = &job.Settings
+
+	name := filepath.Base(job.Path)
+
+	if len(s.DateFormat) == 0 {
+		s.DateFormat = "2006-01-02_15-04-05"
+	}
+
+	if len(s.ArchiveName) == 0 {
+		s.ArchiveName = name
+	}
+
+	if len(s.ArchivesPath) == 0 {
+		s.ArchivesPath = filepath.Dir(job.Path) + string(filepath.Separator) + name + "_ARCHIVE"
+	}
+
+	if len(s.FullSuffix) == 0 {
+		s.FullSuffix = "FULL"
+	}
+
+	if len(s.DiffSuffix) == 0 {
+		s.DiffSuffix = "DIFF"
+	}
+
+	if s.CompressionLevel == -1 {
+		s.CompressionLevel = 5
+	}
 }
