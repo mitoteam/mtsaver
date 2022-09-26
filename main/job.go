@@ -52,7 +52,16 @@ func (job *Job) Run() error {
 		return err
 	}
 
-	cmd := exec.Command(Global.SevenZipCmd, "a", job.GetFullArchiveName(), job.Path)
+	var seven_zip_arguments = []string{
+		"a",                      //add
+		job.GetFullArchiveName(), //arch name
+		job.Path,                 //folder
+		"-ssw",                   //Compress files open for writing
+		//"-xr!.git",               //exclude git
+		//"-xr!*.exe",              //exclude exe
+	}
+
+	cmd := exec.Command(Global.SevenZipCmd, seven_zip_arguments...)
 	output, _ := cmd.CombinedOutput()
 	fmt.Println(string(output))
 
