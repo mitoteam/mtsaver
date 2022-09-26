@@ -52,7 +52,7 @@ func (job *Job) Run() error {
 		return err
 	}
 
-	cmd := exec.Command(Global.SevenZipCmd, "i")
+	cmd := exec.Command(Global.SevenZipCmd, "a", job.GetFullArchiveName(), job.Path)
 	output, _ := cmd.CombinedOutput()
 	fmt.Println(string(output))
 
