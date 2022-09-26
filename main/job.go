@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"time"
 )
@@ -50,6 +51,10 @@ func (job *Job) Run() error {
 	if err := os.MkdirAll(job.ArchivesPath, 0777); err != nil {
 		return err
 	}
+
+	cmd := exec.Command(Global.SevenZipCmd, "i")
+	output, _ := cmd.CombinedOutput()
+	fmt.Println(string(output))
 
 	return nil
 }
