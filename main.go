@@ -23,6 +23,7 @@ func main() {
 		Commands: []*cli.Command{
 			&cmd.CmdVersion,
 			&cmd.CmdInfo,
+			&cmd.CmdRun,
 		},
 
 		Flags: []cli.Flag{
