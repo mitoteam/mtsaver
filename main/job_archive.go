@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-type JobArchiveItem struct {
+type JobArchiveFile struct {
 	Name   string
 	Path   string
 	IsFull bool
@@ -19,13 +19,18 @@ type JobArchiveItem struct {
 }
 
 type JobArchiveFullItem struct {
-	Item                 *JobArchiveItem
-	DiffItemList         []*JobArchiveItem
+	File                 *JobArchiveFile
+	DiffItemList         []*JobArchiveDiffItem
 	TotalDiffSizePercent int
 }
 
+type JobArchiveDiffItem struct {
+	File            *JobArchiveFile
+	DiffSizePercent int
+}
+
 type JobArchive struct {
-	RawList      []JobArchiveItem
+	FilesList    []JobArchiveFile
 	FullItemList []JobArchiveFullItem
 }
 
@@ -36,7 +41,7 @@ func (job *Job) ScanArchive() {
 	}
 
 	job.Archive = JobArchive{
-		RawList:      make([]JobArchiveItem, 0, len(files_list)),
+		FilesList:    make([]JobArchiveFile, 0, len(files_list)),
 		FullItemList: make([]JobArchiveFullItem, 0),
 	}
 
@@ -62,9 +67,9 @@ func (job *Job) ScanArchive() {
 
 		info, err := value.Info()
 		if err == nil {
-			job.Archive.RawList = append(
-				job.Archive.RawList,
-				JobArchiveItem{
+			job.Archive.FilesList = append(
+				job.Archive.FilesList,
+				JobArchiveFile{
 					Name:   value.Name(),
 					Path:   job.Settings.ArchivesPath + string(os.PathSeparator) + value.Name(),
 					IsFull: strings.HasSuffix(value.Name(), full_suffix),
@@ -76,20 +81,20 @@ func (job *Job) ScanArchive() {
 	}
 
 	//sort by time
-	sort.Slice(job.Archive.RawList, func(i, j int) bool {
-		return job.Archive.RawList[i].Time.Before(job.Archive.RawList[j].Time)
+	sort.Slice(job.Archive.FilesList, func(i, j int) bool {
+		return job.Archive.FilesList[i].Time.Before(job.Archive.FilesList[j].Time)
 	})
 
 	// build FULL -> DIFF[] tree
 	var current_full_item *JobArchiveFullItem = nil
 
-	for index := range job.Archive.RawList {
-		var ai_pointer = &job.Archive.RawList[index]
+	for index := range job.Archive.FilesList {
+		var ai_pointer = &job.Archive.FilesList[index]
 
 		if ai_pointer.IsFull {
 			full_item := JobArchiveFullItem{
-				Item:         ai_pointer,
-				DiffItemList: make([]*JobArchiveItem, 0),
+				File:         ai_pointer,
+				DiffItemList: make([]*JobArchiveDiffItem, 0),
 			}
 
 			job.Archive.FullItemList = append(job.Archive.FullItemList, full_item)
@@ -98,7 +103,12 @@ func (job *Job) ScanArchive() {
 			current_full_item = &job.Archive.FullItemList[len(job.Archive.FullItemList)-1]
 		} else {
 			if current_full_item != nil { //skip diffs without parent
-				current_full_item.DiffItemList = append(current_full_item.DiffItemList, ai_pointer)
+				current_full_item.DiffItemList = append(
+					current_full_item.DiffItemList,
+					&JobArchiveDiffItem{
+						File: ai_pointer,
+					},
+				)
 			}
 		}
 	}
@@ -107,51 +117,55 @@ func (job *Job) ScanArchive() {
 	for index := range job.Archive.FullItemList {
 		full_item := &job.Archive.FullItemList[index]
 
-		if full_item.Item.Size == 0 {
+		if full_item.File.Size == 0 {
 			continue
 		}
 
 		var total_diff_size int64 = 0
 
 		for index := range full_item.DiffItemList {
-			total_diff_size += full_item.DiffItemList[index].Size
+			diff_item := full_item.DiffItemList[index]
+			diff_item.DiffSizePercent = int(diff_item.File.Size * 100 / full_item.File.Size)
+
+			total_diff_size += diff_item.File.Size
 		}
 
-		full_item.TotalDiffSizePercent = int(total_diff_size * 100 / full_item.Item.Size)
+		full_item.TotalDiffSizePercent = int(total_diff_size * 100 / full_item.File.Size)
 	}
 }
 
-func (ja *JobArchive) Dump() {
+func (ja *JobArchive) Dump(die bool) {
 	fmt.Println("------ RAW LIST ------- ")
-	for _, raw_item := range ja.RawList {
-		fmt.Println("RAW: "+raw_item.Name, raw_item.Size)
+	for _, raw_file := range ja.FilesList {
+		fmt.Println("RAW: "+raw_file.Name, raw_file.Size)
 	}
 
 	fmt.Println("------------- ")
 	for index := range ja.FullItemList {
 		full_item := &ja.FullItemList[index]
 
-		fmt.Printf("FULL: %s, size: %d, diff_size: %d%%\n", full_item.Item.Name, full_item.Item.Size, full_item.TotalDiffSizePercent)
+		fmt.Printf("FULL: %s, size: %d, diff_size: %d%%\n", full_item.File.Name, full_item.File.Size, full_item.TotalDiffSizePercent)
 
-		for index := range full_item.DiffItemList {
-			diff_item := full_item.DiffItemList[index]
-			fmt.Println("    DIFF: "+diff_item.Name, diff_item.Size)
+		for _, diff_item := range full_item.DiffItemList {
+			fmt.Printf("    DIFF: %s, size %d %d%%\n", diff_item.File.Name, diff_item.File.Size, diff_item.DiffSizePercent)
 		}
 	}
 
-	os.Exit(0)
+	if die {
+		os.Exit(0)
+	}
 }
 
 func (afi *JobArchiveFullItem) Unlink() {
 	//delete diffs
-	for _, v := range afi.DiffItemList {
-		if err := os.Remove(v.Path); err != nil {
-			log.Fatalf("Error deleting file %s: %s", v.Path, err)
+	for _, diff_item := range afi.DiffItemList {
+		if err := os.Remove(diff_item.File.Path); err != nil {
+			log.Fatalf("Error deleting file %s: %s", diff_item.File.Path, err)
 		}
 	}
 
 	//delete itself
-	if err := os.Remove(afi.Item.Path); err != nil {
-		log.Fatalf("Error deleting file %s: %s", afi.Item.Path, err)
+	if err := os.Remove(afi.File.Path); err != nil {
+		log.Fatalf("Error deleting file %s: %s", afi.File.Path, err)
 	}
 }

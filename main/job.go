@@ -57,35 +57,38 @@ func (job *Job) Run() error {
 	} else {
 		//check diffs for the last one
 		need_full := false
-		full_item := job.Archive.FullItemList[len(job.Archive.FullItemList)-1]
+		last_full_item := job.Archive.FullItemList[len(job.Archive.FullItemList)-1]
 
 		//check max count
-		if len(full_item.DiffItemList) >= job.Settings.MaxDiffCount {
+		if len(last_full_item.DiffItemList) >= job.Settings.MaxDiffCount {
 			need_full = true
 		}
 
 		//check max total size (in percents!)
 		if job.Settings.MaxTotalDiffSizePercent > 0 {
-			if full_item.TotalDiffSizePercent >= job.Settings.MaxTotalDiffSizePercent {
+			if last_full_item.TotalDiffSizePercent >= job.Settings.MaxTotalDiffSizePercent {
 				need_full = true
 			}
 		}
 
 		//check last diff size (in percents!)
-		if job.Settings.MaxDiffSizePercent > 0 && len(full_item.DiffItemList) > 0 {
-
-			if full_item.TotalDiffSizePercent >= job.Settings.MaxTotalDiffSizePercent {
+		if job.Settings.MaxDiffSizePercent > 0 && len(last_full_item.DiffItemList) > 0 {
+			last_diff_item := last_full_item.DiffItemList[len(last_full_item.DiffItemList)-1]
+			if last_diff_item.DiffSizePercent >= job.Settings.MaxDiffSizePercent {
 				need_full = true
 			}
 		}
 
-		job.createNewArchive(need_full, full_item.Item.Path)
+		job.createNewArchive(need_full, last_full_item.File.Path)
 	}
 
 	if job.Settings.Cleanup == "after" {
 		job.ScanArchive() //new archives may have been created
 		job.cleanup()
 	}
+
+	job.ScanArchive()
+	job.Archive.Dump(false)
 
 	return nil
 }
