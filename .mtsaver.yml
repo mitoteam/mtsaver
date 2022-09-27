@@ -5,5 +5,5 @@ exclude:
   - "*.exe"
 
 max_full_count: 4
-max_diff_count: 2
+#max_diff_count: 2
 cleanup: after

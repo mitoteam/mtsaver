@@ -19,9 +19,18 @@ type JobSettings struct {
 
 	CompressionLevel int `yaml:"compression_level"`
 	Exclude          []string
-	MaxFullCount     int    `yaml:"max_full_count"`
-	MaxDiffCount     int    `yaml:"max_diff_count"`
 	Cleanup          string `yaml:"cleanup"`
+
+	MaxFullCount int `yaml:"max_full_count"`
+
+	//Maximum number of diff archives to have after full backup
+	MaxDiffCount int `yaml:"max_diff_count"`
+
+	//Maximum latest diff size IN PERCENTS to force full backup
+	MaxDiffSizePercent int `yaml:"max_diff_size_percent"`
+
+	//Maximum total diffs size IN PERCENTS to force full backup
+	MaxTotalDiffSizePercent int `yaml:"max_total_diff_size_percent"`
 }
 
 func (job_settings *JobSettings) LoadFromDir(dirPath string) {

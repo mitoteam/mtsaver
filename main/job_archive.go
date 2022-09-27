@@ -19,8 +19,9 @@ type JobArchiveItem struct {
 }
 
 type JobArchiveFullItem struct {
-	Item         *JobArchiveItem
-	DiffItemList []*JobArchiveItem
+	Item                 *JobArchiveItem
+	DiffItemList         []*JobArchiveItem
+	TotalDiffSizePercent int
 }
 
 type JobArchive struct {
@@ -101,6 +102,23 @@ func (job *Job) ScanArchive() {
 			}
 		}
 	}
+
+	//calculate diff sizes
+	for index := range job.Archive.FullItemList {
+		full_item := &job.Archive.FullItemList[index]
+
+		if full_item.Item.Size == 0 {
+			continue
+		}
+
+		var total_diff_size int64 = 0
+
+		for index := range full_item.DiffItemList {
+			total_diff_size += full_item.DiffItemList[index].Size
+		}
+
+		full_item.TotalDiffSizePercent = int(total_diff_size * 100 / full_item.Item.Size)
+	}
 }
 
 func (ja *JobArchive) Dump() {
@@ -113,7 +131,7 @@ func (ja *JobArchive) Dump() {
 	for index := range ja.FullItemList {
 		full_item := &ja.FullItemList[index]
 
-		fmt.Println("FULL: "+full_item.Item.Name, full_item.Item.Size)
+		fmt.Printf("FULL: %s, size: %d, diff_size: %d%%\n", full_item.Item.Name, full_item.Item.Size, full_item.TotalDiffSizePercent)
 
 		for index := range full_item.DiffItemList {
 			diff_item := full_item.DiffItemList[index]

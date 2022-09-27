@@ -59,8 +59,24 @@ func (job *Job) Run() error {
 		need_full := false
 		full_item := job.Archive.FullItemList[len(job.Archive.FullItemList)-1]
 
+		//check max count
 		if len(full_item.DiffItemList) >= job.Settings.MaxDiffCount {
 			need_full = true
+		}
+
+		//check max total size (in percents!)
+		if job.Settings.MaxTotalDiffSizePercent > 0 {
+			if full_item.TotalDiffSizePercent >= job.Settings.MaxTotalDiffSizePercent {
+				need_full = true
+			}
+		}
+
+		//check last diff size (in percents!)
+		if job.Settings.MaxDiffSizePercent > 0 && len(full_item.DiffItemList) > 0 {
+
+			if full_item.TotalDiffSizePercent >= job.Settings.MaxTotalDiffSizePercent {
+				need_full = true
+			}
 		}
 
 		job.createNewArchive(need_full, full_item.Item.Path)
@@ -92,7 +108,7 @@ func (job *Job) LoadSettings() {
 	job.Settings = JobSettings{
 		CompressionLevel: -1,
 		MaxFullCount:     5,
-		MaxDiffCount:     5,
+		MaxDiffCount:     20,
 	}
 
 	job.Settings.LoadFromDir(job.Path)
