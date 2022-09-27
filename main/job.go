@@ -51,20 +51,33 @@ func (job *Job) Run() error {
 		job.cleanup()
 	}
 
-	job.createArchive(true)
-	job.ScanArchive() //something was added, need re-scan
+	if len(job.Archive.FullItemList) == 0 { //no full archives at all
+		//create one unconditionally
+		job.createNewArchive(true, "")
+	} else {
+		//check diffs for the last one
+		need_full := false
+		full_item := job.Archive.FullItemList[len(job.Archive.FullItemList)-1]
+
+		if len(full_item.DiffItemList) >= job.Settings.MaxDiffCount {
+			need_full = true
+		}
+
+		job.createNewArchive(need_full, full_item.Item.Path)
+	}
 
 	if job.Settings.Cleanup == "after" {
+		job.ScanArchive() //new archives may have been created
 		job.cleanup()
 	}
 
 	return nil
 }
 
-func (job *Job) getArchiveName(full bool) string {
+func (job *Job) getArchiveName(is_full bool) string {
 	var suffix string
 
-	if full {
+	if is_full {
 		suffix = job.Settings.FullSuffix
 	} else {
 		suffix = job.Settings.DiffSuffix
@@ -131,13 +144,28 @@ func (job *Job) LoadSettings() {
 	}
 }
 
-func (job *Job) createArchive(is_full bool) {
-	var seven_zip_arguments = []string{
-		"u",                      //add
-		job.getArchiveName(true), //arch name
-		"-ssw",                   //Compress files open for writing
-		"-mx" + strconv.Itoa(job.Settings.CompressionLevel), //compression level
+func (job *Job) createNewArchive(is_full bool, full_archive_path string) {
+	var seven_zip_arguments = make([]string, 0, 10)
+
+	if is_full {
+		seven_zip_arguments = append(
+			seven_zip_arguments, "a",
+			job.getArchiveName(true), //new full arch name
+		)
+	} else {
+		seven_zip_arguments = append(
+			seven_zip_arguments, "u",
+			full_archive_path,
+			"-u-", // disable updates in the base archive
+			"-up0q3r2x2y2z0w2!"+job.getArchiveName(false),
+		)
 	}
+
+	//common arguments
+	seven_zip_arguments = append(seven_zip_arguments,
+		"-ssw", //Compress files open for writing
+		"-mx"+strconv.Itoa(job.Settings.CompressionLevel), //compression level
+	)
 
 	for _, pattern := range job.Settings.Exclude {
 		seven_zip_arguments = append(seven_zip_arguments, "-xr!"+pattern)
