@@ -12,6 +12,7 @@ import (
 
 type JobArchiveItem struct {
 	Name   string
+	Path   string
 	IsFull bool
 	Size   int64
 	Time   time.Time
@@ -64,6 +65,7 @@ func (job *Job) ScanArchive() {
 				job.Archive.RawList,
 				JobArchiveItem{
 					Name:   value.Name(),
+					Path:   job.Settings.ArchivesPath + string(os.PathSeparator) + value.Name(),
 					IsFull: strings.HasSuffix(value.Name(), full_suffix),
 					Size:   info.Size(),
 					Time:   info.ModTime(),
@@ -117,5 +119,21 @@ func (ja *JobArchive) Dump() {
 			diff_item := full_item.DiffItemList[index]
 			fmt.Println("    DIFF: "+diff_item.Name, diff_item.Size)
 		}
+	}
+
+	os.Exit(0)
+}
+
+func (afi *JobArchiveFullItem) Unlink() {
+	//delete diffs
+	for _, v := range afi.DiffItemList {
+		if err := os.Remove(v.Path); err != nil {
+			log.Fatalf("Error deleting file %s: %s", v.Path, err)
+		}
+	}
+
+	//delete itself
+	if err := os.Remove(afi.Item.Path); err != nil {
+		log.Fatalf("Error deleting file %s: %s", afi.Item.Path, err)
 	}
 }

@@ -35,10 +35,6 @@ func NewJob(path string) (*Job, error) {
 	}
 
 	job.LoadSettings()
-	job.ScanArchive()
-
-	job.Archive.Dump()
-	os.Exit(0)
 
 	return job, nil
 }
@@ -48,28 +44,19 @@ func (job *Job) Run() error {
 		return err
 	}
 
-	var seven_zip_arguments = []string{
-		"u",                      //add
-		job.getArchiveName(true), //arch name
-		"-ssw",                   //Compress files open for writing
-		"-mx" + strconv.Itoa(job.Settings.CompressionLevel), //compression level
+	job.ScanArchive()
+	//job.Archive.Dump()
+
+	if job.Settings.Cleanup == "before" {
+		job.cleanup()
 	}
 
-	for _, pattern := range job.Settings.Exclude {
-		seven_zip_arguments = append(seven_zip_arguments, "-xr!"+pattern)
+	job.createArchive(true)
+	job.ScanArchive() //something was added, need re-scan
+
+	if job.Settings.Cleanup == "after" {
+		job.cleanup()
 	}
-
-	// final argument - folder to pack
-	seven_zip_arguments = append(
-		seven_zip_arguments,
-		job.Path+string(filepath.Separator)+"*",
-	)
-
-	//run command
-	cmd := exec.Command(Global.SevenZipCmd, seven_zip_arguments...)
-	//fmt.Println("CMD: " + cmd.String())
-	output, _ := cmd.CombinedOutput()
-	fmt.Println(string(output))
 
 	return nil
 }
@@ -91,6 +78,8 @@ func (job *Job) getArchiveName(full bool) string {
 func (job *Job) LoadSettings() {
 	job.Settings = JobSettings{
 		CompressionLevel: -1,
+		MaxFullCount:     5,
+		MaxDiffCount:     5,
 	}
 
 	job.Settings.LoadFromDir(job.Path)
@@ -125,5 +114,53 @@ func (job *Job) LoadSettings() {
 	// Do settings checks
 	if s.FullSuffix == s.DiffSuffix {
 		log.Fatalln("Full suffix should differ from diff suffix")
+	}
+
+	if s.Cleanup == "" {
+		s.Cleanup = "after"
+	} else if s.Cleanup != "before" && s.Cleanup != "after" {
+		log.Fatalln("Valid  values for 'cleanup' option are 'before', 'after'")
+	}
+
+	if s.MaxFullCount < 1 {
+		log.Fatalln("Minumum value for max_full_count is 1")
+	}
+
+	if s.MaxDiffCount < 0 {
+		log.Fatalln("Minumum value for max_diff_count is 0")
+	}
+}
+
+func (job *Job) createArchive(is_full bool) {
+	var seven_zip_arguments = []string{
+		"u",                      //add
+		job.getArchiveName(true), //arch name
+		"-ssw",                   //Compress files open for writing
+		"-mx" + strconv.Itoa(job.Settings.CompressionLevel), //compression level
+	}
+
+	for _, pattern := range job.Settings.Exclude {
+		seven_zip_arguments = append(seven_zip_arguments, "-xr!"+pattern)
+	}
+
+	// final argument - folder to pack
+	seven_zip_arguments = append(
+		seven_zip_arguments,
+		job.Path+string(filepath.Separator)+"*",
+	)
+
+	//run command
+	cmd := exec.Command(Global.SevenZipCmd, seven_zip_arguments...)
+	//fmt.Println("CMD: " + cmd.String())
+	output, _ := cmd.CombinedOutput()
+	fmt.Println(string(output))
+}
+
+func (job *Job) cleanup() {
+	//delete FULL items
+	for len(job.Archive.FullItemList) > job.Settings.MaxFullCount {
+		job.Archive.FullItemList[0].Unlink()
+
+		job.Archive.FullItemList = job.Archive.FullItemList[1:]
 	}
 }
