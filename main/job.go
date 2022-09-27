@@ -14,6 +14,7 @@ import (
 type Job struct {
 	Path     string
 	Settings JobSettings
+	Archive  JobArchive
 }
 
 func NewJob(path string) (*Job, error) {
@@ -34,6 +35,10 @@ func NewJob(path string) (*Job, error) {
 	}
 
 	job.LoadSettings()
+	job.ScanArchive()
+
+	job.Archive.Dump()
+	os.Exit(0)
 
 	return job, nil
 }
