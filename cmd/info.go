@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	mtsaver "mtsaver/main"
+	"mtsaver/app"
 
 	"github.com/spf13/cobra"
 )
@@ -16,9 +16,9 @@ var infoCmd = &cobra.Command{
 	Short: "Print information about system, environment and so on",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println(mtsaver.Global.AppName + " version: " + mtsaver.Global.Version)
-		fmt.Println("Built with: " + mtsaver.Global.BuiltWith)
-		fmt.Println("7-zip command: " + mtsaver.Global.SevenZipCmd)
-		fmt.Println("7-zip info: " + mtsaver.Global.SevenZipInfo)
+		fmt.Println(app.Global.AppName + " version: " + app.Global.Version)
+		fmt.Println("Built with: " + app.Global.BuiltWith)
+		fmt.Println("7-zip command: " + app.Global.SevenZipCmd)
+		fmt.Println("7-zip info: " + app.Global.SevenZipInfo)
 	},
 }

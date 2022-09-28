@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	mtsaver "mtsaver/main"
+	"mtsaver/app"
 
 	"github.com/spf13/cobra"
 )
@@ -13,9 +13,9 @@ func init() {
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "Print the raw version number of " + mtsaver.Global.AppName,
+	Short: "Print the raw version number of " + app.Global.AppName,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println(mtsaver.Global.Version)
+		fmt.Println(app.Global.Version)
 	},
 }

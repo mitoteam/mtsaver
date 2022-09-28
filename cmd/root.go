@@ -2,14 +2,14 @@ package cmd
 
 import (
 	"log"
-	mtsaver "mtsaver/main"
+	"mtsaver/app"
 
 	"github.com/spf13/cobra"
 )
 
 var rootCmd = &cobra.Command{
-	Use:     mtsaver.Global.AppName,
-	Version: mtsaver.Global.Version,
+	Use:     app.Global.AppName,
+	Version: app.Global.Version,
 	Short:   "7-Zip based backup arhives retention",
 	Long: `7-Zip based backup arhives retention.
 Copyright: MiTo Team, https://mito-team.com`,
@@ -22,12 +22,12 @@ Copyright: MiTo Team, https://mito-team.com`,
 		cmd.Help()
 	},
 
-	PersistentPreRun: mtsaver.SetupBeforeCommand,
+	PersistentPreRun: app.SetupBeforeCommand,
 }
 
 func ExecuteCliApp() {
 	rootCmd.PersistentFlags().StringVar(
-		&mtsaver.Global.SevenZipCmd,
+		&app.Global.SevenZipCmd,
 		"7zip",
 		"auto",
 		"Command to run 7-Zip executable. \"auto\" = try to auto-detect",

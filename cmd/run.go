@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	mtsaver "mtsaver/main"
+	"mtsaver/app"
 
 	"github.com/spf13/cobra"
 )
@@ -22,7 +22,7 @@ var runCmd = &cobra.Command{
 			path = "." //current directory
 		}
 
-		job, err := mtsaver.NewJob(path)
+		job, err := app.NewJob(path)
 		if err != nil {
 			return err
 		}

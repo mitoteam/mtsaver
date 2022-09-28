@@ -1,4 +1,4 @@
-package mtsaver
+package app
 
 import (
 	"bufio"
@@ -11,6 +11,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var BuildVersion = "DEV"
+
 var Global struct {
 	AppName      string
 	Version      string
@@ -21,7 +23,7 @@ var Global struct {
 
 func init() {
 	Global.AppName = "mtsaver"
-	Global.Version = "1.0.0-alpha"
+	Global.Version = BuildVersion
 	Global.BuiltWith = runtime.Version()
 }
 
