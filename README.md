@@ -1,6 +1,7 @@
 # mtsaver
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/mitoteam/ormann)](https://goreportcard.com/report/github.com/mitoteam/ormann)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mitoteam/mtsaver)](https://goreportcard.com/report/github.com/mitoteam/mtsaver)
+![GitHub](https://img.shields.io/github/license/mitoteam/mtsaver)
 
 7-Zip based simple directory backup command line solution.
 
