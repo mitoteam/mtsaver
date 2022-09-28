@@ -7,10 +7,10 @@ tab_width = 4
 end_of_line = lf
 charset = utf-8
 trim_trailing_whitespace = true
-insert_final_newline = true
 
-[*.{go,tmpl}]
+[*.{go}]
 indent_style = tab
+insert_final_newline = true
 
 [Makefile]
 indent_style = tab
@@ -18,5 +18,3 @@ indent_style = tab
 [*.tmpl]
 insert_final_newline = false
 
-[*.svg]
-insert_final_newline = false
