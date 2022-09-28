@@ -8,7 +8,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-const settings_filename = ".mtsaver.yml"
+const settingsFilename = ".mtsaver.yml"
 
 type JobSettings struct {
 	ArchivesPath string
@@ -34,7 +34,7 @@ type JobSettings struct {
 }
 
 func (job_settings *JobSettings) LoadFromDir(dirPath string) {
-	var filename = dirPath + string(filepath.Separator) + settings_filename
+	var filename = filepath.Join(dirPath, settingsFilename)
 
 	//try to load only if it exists
 	if _, err := os.Stat(filename); err != nil {

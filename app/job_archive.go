@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
@@ -71,7 +72,7 @@ func (job *Job) ScanArchive() {
 				job.Archive.FilesList,
 				JobArchiveFile{
 					Name:   value.Name(),
-					Path:   job.Settings.ArchivesPath + string(os.PathSeparator) + value.Name(),
+					Path:   filepath.Join(job.Settings.ArchivesPath, value.Name()),
 					IsFull: strings.HasSuffix(value.Name(), full_suffix),
 					Size:   info.Size(),
 					Time:   info.ModTime(),

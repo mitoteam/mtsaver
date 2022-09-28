@@ -102,9 +102,10 @@ func (job *Job) getArchiveName(is_full bool) string {
 		suffix = job.Settings.DiffSuffix
 	}
 
-	return job.Settings.ArchivesPath + string(filepath.Separator) +
-		job.Settings.ArchiveName + "_" + time.Now().Format(job.Settings.DateFormat) +
-		"_" + suffix + ".7z"
+	return filepath.Join(
+		job.Settings.ArchivesPath,
+		job.Settings.ArchiveName+"_"+time.Now().Format(job.Settings.DateFormat)+"_"+suffix+".7z",
+	)
 }
 
 func (job *Job) LoadSettings() {
@@ -128,7 +129,7 @@ func (job *Job) LoadSettings() {
 	}
 
 	if len(s.ArchivesPath) == 0 {
-		s.ArchivesPath = filepath.Dir(job.Path) + string(filepath.Separator) + name + "_ARCHIVE"
+		s.ArchivesPath = filepath.Join(filepath.Dir(job.Path), name+"_ARCHIVE")
 	}
 
 	if len(s.FullSuffix) == 0 {
@@ -193,7 +194,7 @@ func (job *Job) createNewArchive(is_full bool, full_archive_path string) {
 	// final argument - folder to pack
 	seven_zip_arguments = append(
 		seven_zip_arguments,
-		job.Path+string(filepath.Separator)+"*",
+		filepath.Join(job.Path, "*"),
 	)
 
 	//run command
