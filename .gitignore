@@ -1,3 +1,4 @@
 *.exe
 /mtsaver
 /dist/
+.vscode/
