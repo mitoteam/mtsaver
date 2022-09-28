@@ -53,7 +53,7 @@ func (job *Job) Run() error {
 
 	if len(job.Archive.FullItemList) == 0 { //no full archives at all
 		//create one unconditionally
-		job.createNewArchive(true, "")
+		job.createArchive(true, "")
 	} else {
 		//check diffs for the last one
 		need_full := false
@@ -79,7 +79,7 @@ func (job *Job) Run() error {
 			}
 		}
 
-		job.createNewArchive(need_full, last_full_item.File.Path)
+		job.createArchive(need_full, last_full_item.File.Path)
 	}
 
 	if job.Settings.Cleanup == "after" {
@@ -164,44 +164,83 @@ func (job *Job) LoadSettings() {
 	}
 }
 
-func (job *Job) createNewArchive(is_full bool, full_archive_path string) {
-	var seven_zip_arguments = make([]string, 0, 10)
+func (job *Job) createArchive(is_full bool, full_archive_path string) {
+	var common_arguments = []string{} //command
 
 	if is_full {
-		seven_zip_arguments = append(
-			seven_zip_arguments, "a",
-			job.getArchiveName(true), //new full arch name
+		common_arguments = append(common_arguments,
+			"a",
+			job.getArchiveName(true), //new full archive name
 		)
 	} else {
-		seven_zip_arguments = append(
-			seven_zip_arguments, "u",
-			full_archive_path,
-			"-u-", // disable updates in the base archive
-			"-up3q3r2x2y2z0w2!"+job.getArchiveName(false),
+		// thanks: https://nagimov.me/post/simple-differential-and-incremental-backups-using-7-zip/
+
+		common_arguments = append(common_arguments,
+			"u",
+			full_archive_path, //existing full archive
+			"-u-",             // disable updates in the base archive
+			"-up3q3r2x2y2z0w2!"+job.getArchiveName(false), //new diff archive name
 		)
 	}
 
-	//common arguments
-	seven_zip_arguments = append(seven_zip_arguments,
+	common_arguments = append(common_arguments,
+		"-r0",  //recursion only for patterns with wildcard
 		"-ssw", //Compress files open for writing
+	)
+
+	//exclusions
+	for _, pattern := range job.Settings.Exclude {
+		common_arguments = append(common_arguments, "-xr!"+pattern)
+	}
+
+	// RUN BASIC COMPRESSION
+	var basic_arguments = make([]string, len(common_arguments))
+	copy(basic_arguments, common_arguments)
+
+	basic_arguments = append(basic_arguments,
 		"-mx"+strconv.Itoa(job.Settings.CompressionLevel), //compression level
 	)
 
-	for _, pattern := range job.Settings.Exclude {
-		seven_zip_arguments = append(seven_zip_arguments, "-xr!"+pattern)
+	if is_full {
+		// exclude skip_compression patterns
+		for _, pattern := range job.Settings.SkipCompression {
+			basic_arguments = append(basic_arguments, "-xr!"+pattern)
+		}
 	}
 
-	// final argument - folder to pack
-	seven_zip_arguments = append(
-		seven_zip_arguments,
-		filepath.Join(job.Path, "*"),
-	)
+	// final argument - whole folder to pack
+	basic_arguments = append(basic_arguments, filepath.Join(job.Path, "*"))
 
-	//run command
-	cmd := exec.Command(Global.SevenZipCmd, seven_zip_arguments...)
-	//fmt.Println("CMD: " + cmd.String())
-	output, _ := cmd.CombinedOutput()
+	// run command
+	runSevenZip(basic_arguments)
+
+	//// ADD ITEMS WITHOUT COMPRESSION - works only for full archives now
+	if is_full {
+		var skip_compression_arguments = make([]string, len(common_arguments))
+		copy(skip_compression_arguments, common_arguments)
+
+		skip_compression_arguments = append(skip_compression_arguments,
+			"-m0=copy", //do not compress at all
+		)
+
+		// exclude skip_compression patterns
+		for _, pattern := range job.Settings.SkipCompression {
+			skip_compression_arguments = append(skip_compression_arguments, filepath.Join(job.Path, pattern))
+		}
+
+		runSevenZip(skip_compression_arguments)
+	}
+}
+
+func runSevenZip(arguments []string) {
+	cmd := exec.Command(Global.SevenZipCmd, arguments...)
+	// fmt.Println("CMD: " + cmd.String())
+	output, err := cmd.CombinedOutput()
 	fmt.Println(string(output))
+
+	if err != nil {
+		log.Fatalln("ERROR runnning command: " + cmd.String())
+	}
 }
 
 func (job *Job) cleanup() {

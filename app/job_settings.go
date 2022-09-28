@@ -17,9 +17,17 @@ type JobSettings struct {
 	DiffSuffix   string
 	DateFormat   string
 
+	//Int value from 0 = do not compress to 9 = max compression, longest time
 	CompressionLevel int `yaml:"compression_level"`
-	Exclude          []string
-	Cleanup          string `yaml:"cleanup"`
+
+	//List of patterns to exclude from archive
+	Exclude []string
+
+	//List of patterns to be added to archive without compression (works for FULL backups only)
+	SkipCompression []string `yaml:"skip_compression"`
+
+	//Run cleanup procedure before or after archive creation (default: after)
+	Cleanup string `yaml:"cleanup"`
 
 	MaxFullCount int `yaml:"max_full_count"`
 
