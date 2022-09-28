@@ -4,6 +4,12 @@
 
 Trying to be self-explainatory (`mtsaver help`). More docs will be added later.
 
+## Usage
+
+Build from sources (`make`) or unpack one of pre-compiled binaries.
+
+Run `mtsaver help` for help.
+
 ## Inspired by
 - https://www.cobiansoft.com/about.html
 - https://nagimov.me/post/simple-differential-and-incremental-backups-using-7-zip/
