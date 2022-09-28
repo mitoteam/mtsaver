@@ -1,2 +1,3 @@
-/mtsaver.exe
+*.exe
 /mtsaver
+/dist/

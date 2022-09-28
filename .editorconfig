@@ -12,6 +12,9 @@ insert_final_newline = true
 [*.{go,tmpl}]
 indent_style = tab
 
+[Makefile]
+indent_style = tab
+
 [*.tmpl]
 insert_final_newline = false
 
