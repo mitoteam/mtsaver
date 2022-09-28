@@ -12,10 +12,12 @@ import (
 )
 
 var BuildVersion = "DEV"
+var BuildCommit = "DEV"
 
 var Global struct {
 	AppName      string
 	Version      string
+	Commit       string
 	BuiltWith    string
 	SevenZipCmd  string
 	SevenZipInfo string
@@ -24,6 +26,7 @@ var Global struct {
 func init() {
 	Global.AppName = "mtsaver"
 	Global.Version = BuildVersion
+	Global.Commit = BuildCommit
 	Global.BuiltWith = runtime.Version()
 }
 
