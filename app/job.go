@@ -185,8 +185,11 @@ func (job *Job) createArchive(is_full bool, full_archive_path string) {
 	}
 
 	common_arguments = append(common_arguments,
-		"-r0",  //recursion only for patterns with wildcard
-		"-ssw", //Compress files open for writing
+		"-r0",       //recursion only for patterns with wildcard
+		"-ssw",      //compress files open for writing
+		"-bb1",      //show names of processed files
+		"-bse1",     //error messages to stdout
+		"-sccUTF-8", //console output encoding
 	)
 
 	//exclusions
@@ -237,29 +240,15 @@ func runSevenZip(arguments []string) {
 	cmd := exec.Command(Global.SevenZipCmd, arguments...)
 	// fmt.Println("CMD: " + cmd.String())
 
-	cmdStdout, _ := cmd.StdoutPipe()
-	cmdStderr, _ := cmd.StderrPipe()
+	pipe, _ := cmd.StdoutPipe()
 
 	cmd.Start()
-	scanner1 := bufio.NewScanner(cmdStdout)
-	scanner2 := bufio.NewScanner(cmdStderr)
 
-	for scan_more := false; ; {
-		scan_more = false
+	scanner := bufio.NewScanner(pipe)
 
-		if scanner1.Scan() {
-			fmt.Println(scanner1.Text())
-			scan_more = true
-		}
-
-		if scanner2.Scan() {
-			fmt.Println(scanner2.Text())
-			scan_more = true
-		}
-
-		if !scan_more {
-			break
-		}
+	for scanner.Scan() {
+		text := scanner.Text()
+		fmt.Println(text)
 	}
 
 	cmd.Wait()
