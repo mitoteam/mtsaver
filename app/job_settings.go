@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -59,4 +60,14 @@ func (job_settings *JobSettings) LoadFromDir(dirPath string) {
 	if err != nil {
 		log.Fatalf("Error parsing yaml: %v", err)
 	}
+}
+
+func (js *JobSettings) Print() {
+	yaml, err := yaml.Marshal(js)
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	fmt.Println(string(yaml))
 }
