@@ -1,3 +1,4 @@
+# This file is just a test example. Please see documentation for better options explanation.
 compression_level: 9
 exclude:
   - ".vscode"

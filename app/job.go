@@ -88,7 +88,7 @@ func (job *Job) Run() error {
 	}
 
 	job.ScanArchive()
-	job.Archive.Dump(false)
+	//job.Archive.Dump(false)
 
 	return nil
 }
@@ -177,7 +177,7 @@ func (job *Job) createNewArchive(is_full bool, full_archive_path string) {
 			seven_zip_arguments, "u",
 			full_archive_path,
 			"-u-", // disable updates in the base archive
-			"-up0q3r2x2y2z0w2!"+job.getArchiveName(false),
+			"-up3q3r2x2y2z0w2!"+job.getArchiveName(false),
 		)
 	}
 
