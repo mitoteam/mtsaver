@@ -1,6 +1,7 @@
 package app
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"log"
@@ -235,12 +236,33 @@ func (job *Job) createArchive(is_full bool, full_archive_path string) {
 func runSevenZip(arguments []string) {
 	cmd := exec.Command(Global.SevenZipCmd, arguments...)
 	// fmt.Println("CMD: " + cmd.String())
-	output, err := cmd.CombinedOutput()
-	fmt.Println(string(output))
 
-	if err != nil {
-		log.Fatalln("ERROR runnning command: " + cmd.String())
+	cmdStdout, _ := cmd.StdoutPipe()
+	cmdStderr, _ := cmd.StderrPipe()
+
+	cmd.Start()
+	scanner1 := bufio.NewScanner(cmdStdout)
+	scanner2 := bufio.NewScanner(cmdStderr)
+
+	for scan_more := false; ; {
+		scan_more = false
+
+		if scanner1.Scan() {
+			fmt.Println(scanner1.Text())
+			scan_more = true
+		}
+
+		if scanner2.Scan() {
+			fmt.Println(scanner2.Text())
+			scan_more = true
+		}
+
+		if !scan_more {
+			break
+		}
 	}
+
+	cmd.Wait()
 }
 
 func (job *Job) cleanup() {
