@@ -33,6 +33,13 @@ func init() {
 		"auto",
 		"Command to run 7-Zip executable. \"auto\" = try to auto-detect",
 	)
+
+	rootCmd.PersistentFlags().StringVar(
+		&app.JobRuntimeOptions.SettingsFilename,
+		"settings",
+		app.DefaultSettingsFilename,
+		"Path to directory settings file",
+	)
 }
 
 func Root() *cobra.Command {

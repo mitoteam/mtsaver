@@ -28,8 +28,9 @@ func init() {
 					log.Fatalln(err)
 				}
 
-				fmt.Println(" --- Directory settings ---")
+				fmt.Println(" --- Directory ---")
 				fmt.Println(" --- Path:", job.Path)
+				fmt.Println(" --- Settings file:", job.SettingsFilename())
 				job.Settings.Print()
 
 				fmt.Println()

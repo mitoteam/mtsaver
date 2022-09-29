@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
 
 	"gopkg.in/yaml.v2"
 )
 
-const settingsFilename = ".mtsaver.yml"
+const DefaultSettingsFilename = ".mtsaver.yml"
 
 // Setting for archived folder
 type JobSettings struct {
@@ -43,21 +42,19 @@ type JobSettings struct {
 	MaxTotalDiffSizePercent int `yaml:"max_total_diff_size_percent"`
 }
 
-func (job_settings *JobSettings) LoadFromDir(dirPath string) {
-	var filename = filepath.Join(dirPath, settingsFilename)
-
+func (js *JobSettings) LoadFromFile(filePath string) {
 	//try to load only if it exists
-	if _, err := os.Stat(filename); err != nil {
+	if _, err := os.Stat(filePath); err != nil {
 		return
 	}
 
-	yamlFile, err := os.ReadFile(filename)
+	yamlFile, err := os.ReadFile(filePath)
 
 	if err != nil {
-		log.Fatalf("Error while reading %v file: %v", filename, err)
+		log.Fatalf("Error while reading %v file: %v", filePath, err)
 	}
 
-	err = yaml.Unmarshal(yamlFile, job_settings)
+	err = yaml.Unmarshal(yamlFile, js)
 	if err != nil {
 		log.Fatalf("Error parsing yaml: %v", err)
 	}

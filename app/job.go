@@ -118,6 +118,16 @@ func (job *Job) getArchiveName(is_full bool) string {
 	)
 }
 
+func (job *Job) SettingsFilename() (filename string) {
+	if filepath.IsAbs(JobRuntimeOptions.SettingsFilename) {
+		filename = JobRuntimeOptions.SettingsFilename
+	} else {
+		filename = filepath.Join(job.Path, JobRuntimeOptions.SettingsFilename)
+	}
+
+	return
+}
+
 func (job *Job) LoadSettings() {
 	job.Settings = JobSettings{
 		CompressionLevel: -1,
@@ -125,7 +135,8 @@ func (job *Job) LoadSettings() {
 		MaxDiffCount:     20,
 	}
 
-	job.Settings.LoadFromDir(job.Path)
+	job.Settings.LoadFromFile(job.SettingsFilename())
+
 	var s = &job.Settings
 
 	name := filepath.Base(job.Path)
