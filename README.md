@@ -13,6 +13,16 @@
 
 Trying to be self-explainatory (`mtsaver help`). More docs will be added later.
 
+## Basic idea
+
+Lets assume we have huge enought working directory (~12 Gb) we want to backup periodicly (for example _daily_). And we want to have history of its changes (for example to be able to restore some file deleted twelve backups ago). Lets assume we want to keep history for _180 days_.
+
+Packing folder with 7-Zip creates 5Gb arhive. Creating 180 archives (one per day) will 1) take 900Gb of storage 2) takes a lot of time to create each archive 3) requires some manual file management to delete outdated arhives beyond 180 days window.
+
+Day by day we work with very small amount of files: some new documents added, rarely some old ones are edited, even more rarely something being deleted.
+
+**mtsaver** is a solution to **pack only those new, changed or removed files** (thank you 7-Zip for anti-items support!) saving time and storage.
+
 ## Usage
 
 Build from sources (`make`) or unpack one of pre-compiled binaries.
