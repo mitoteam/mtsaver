@@ -52,7 +52,16 @@ func (job *Job) Run() error {
 		job.cleanup()
 	}
 
-	if len(job.Archive.FullItemList) == 0 { //no full archives at all
+	if JobRuntimeOptions.ForceFull {
+		job.createArchive(true, "")
+	} else if JobRuntimeOptions.ForceDiff {
+		if len(job.Archive.FullItemList) == 0 {
+			log.Fatalln("can not force differentian backup because no full backups found.")
+		}
+
+		job.createArchive(false, job.Archive.FullItemList[len(job.Archive.FullItemList)-1].File.Path)
+	} else if len(job.Archive.FullItemList) == 0 {
+		//no full archives at all
 		//create one unconditionally
 		job.createArchive(true, "")
 	} else {
@@ -238,7 +247,7 @@ func (job *Job) createArchive(is_full bool, full_archive_path string) {
 
 func runSevenZip(arguments []string) {
 	cmd := exec.Command(Global.SevenZipCmd, arguments...)
-	// fmt.Println("CMD: " + cmd.String())
+	//fmt.Println("CMD: " + cmd.String())
 
 	pipe, _ := cmd.StdoutPipe()
 

@@ -11,6 +11,7 @@ import (
 
 const settingsFilename = ".mtsaver.yml"
 
+// Setting for archived folder
 type JobSettings struct {
 	ArchivesPath string
 	ArchiveName  string

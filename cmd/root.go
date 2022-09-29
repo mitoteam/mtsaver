@@ -1,3 +1,5 @@
+// Package cmd provides CLI commands, flags and arguments handling.
+// spf13/cobra based.
 package cmd
 
 import (
@@ -22,7 +24,7 @@ Copyright: MiTo Team, https://mito-team.com`,
 		cmd.Help()
 	},
 
-	PersistentPreRun: app.SetupBeforeCommand,
+	PersistentPreRunE: app.SetupBeforeCommand,
 }
 
 func ExecuteCliApp() {
@@ -36,4 +38,25 @@ func ExecuteCliApp() {
 	if err := rootCmd.Execute(); err != nil {
 		log.Fatalln(err)
 	}
+}
+
+// CallParentPreRun calls parent command's PersistentPreRun or PersistentPreRunE hooks if they are defined.
+func CallParentPreRun(cmd *cobra.Command, args []string) error {
+	parent := cmd.Parent()
+
+	if parent == nil {
+		return nil
+	}
+
+	if handler := parent.PersistentPreRun; handler != nil {
+		handler(cmd, args)
+	}
+
+	if handler := parent.PersistentPreRunE; handler != nil {
+		if err := handler(cmd, args); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

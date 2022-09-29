@@ -1,8 +1,9 @@
+// Package app contains main mtsaver functionality.
 package app
 
 import (
 	"bufio"
-	"log"
+	"errors"
 	"os"
 	"os/exec"
 	"runtime"
@@ -30,14 +31,14 @@ func init() {
 	Global.BuiltWith = runtime.Version()
 }
 
-func SetupBeforeCommand(cmd *cobra.Command, args []string) {
+func SetupBeforeCommand(cmd *cobra.Command, args []string) error {
 	if Global.SevenZipCmd == "auto" {
 		Global.SevenZipCmd = "" //reset to force autodetection
 	}
 
 	if len(Global.SevenZipCmd) > 0 {
 		if !checkSevenZipCommand(Global.SevenZipCmd) {
-			log.Fatalln("Can not run provided 7-Zip command: " + Global.SevenZipCmd)
+			return errors.New("Can not run provided 7-Zip command: " + Global.SevenZipCmd)
 		}
 	} else {
 		//try autodetect
@@ -64,9 +65,11 @@ func SetupBeforeCommand(cmd *cobra.Command, args []string) {
 		}
 
 		if !r {
-			log.Fatalln("Can not find 7-Zip. Please provide correct path with --7zip flag.")
+			return errors.New("Can not find 7-Zip. Please provide correct path with --7zip flag.")
 		}
 	}
+
+	return nil
 }
 
 func checkSevenZipCommand(cmd string) bool {
