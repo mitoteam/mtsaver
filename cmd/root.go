@@ -11,8 +11,10 @@ import (
 var rootCmd = &cobra.Command{
 	Use:     app.Global.AppName,
 	Version: app.Global.Version,
-	Short:   "7-Zip based backup arhives retention",
-	Long: `7-Zip based backup arhives retention.
+	Long: app.Global.AppName + ` - differential backup arhives retention tool.
+
+Based on using 7-Zip archiver https://www.7-zip.org
+
 Copyright: MiTo Team, https://mito-team.com`,
 
 	//disable 'completition' subcommand
