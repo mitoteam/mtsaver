@@ -54,8 +54,11 @@ backup_2022-01-31_FULL.7z 5Gb   # 30 days passed, new full archive created
 backup_2022-02-01_DIFF.7z 110Kb # changes since last full archive only
 ...
 backup_2022-03-14_DIFF.7z 15Mb
-backup_2022-03-15_DIFF.7z 2.8Gb # something big was added, a lot of documents changed, differential backup became more than 50% of full backup
-backup_2022-03-16_FULL.7z 5.1Gb # so next time new full archive created before 30 days window passed
+backup_2022-03-15_DIFF.7z 2.8Gb # something big was added or a lot of documents
+                                # was changed, differential backup became more
+                                # than 50% of full backup
+backup_2022-03-16_FULL.7z 5.1Gb # so next time new full archive created before 30 days
+                                # window passed
 backup_2022-03-17_DIFF.7z 140Kb # changes since last full archive only
 ...
 backup_2022-06-30_DIFF.7z 51Mb  # changes since last full archive only
