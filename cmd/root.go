@@ -3,7 +3,6 @@
 package cmd
 
 import (
-	"log"
 	"mtsaver/app"
 
 	"github.com/spf13/cobra"
@@ -27,20 +26,21 @@ Copyright: MiTo Team, https://mito-team.com`,
 	PersistentPreRunE: app.SetupBeforeCommand,
 }
 
-func ExecuteCliApp() {
+func init() {
 	rootCmd.PersistentFlags().StringVar(
 		&app.Global.SevenZipCmd,
 		"7zip",
 		"auto",
 		"Command to run 7-Zip executable. \"auto\" = try to auto-detect",
 	)
-
-	if err := rootCmd.Execute(); err != nil {
-		log.Fatalln(err)
-	}
 }
 
-// CallParentPreRun calls parent command's PersistentPreRun or PersistentPreRunE hooks if they are defined.
+func Root() *cobra.Command {
+	return rootCmd
+}
+
+// CallParentPreRun helper function calls parent command's PersistentPreRun
+// or PersistentPreRunE hooks if they are defined.
 func CallParentPreRun(cmd *cobra.Command, args []string) error {
 	parent := cmd.Parent()
 
