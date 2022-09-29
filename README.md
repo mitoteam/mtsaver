@@ -31,7 +31,7 @@ backup_2022-03-16.7z 5.1Gb
 backup_2022-03-17.7z 5.1Gb
 ...
 backup_2022-06-30.7z 5.1Gb
----
+---------------------------
 total: 180 files, 910.5 Gb
 ```
 
@@ -62,8 +62,9 @@ backup_2022-03-16_FULL.7z 5.1Gb # so next time new full archive created before 3
 backup_2022-03-17_DIFF.7z 140Kb # changes since last full archive only
 ...
 backup_2022-06-30_DIFF.7z 51Mb  # changes since last full archive only
----
-total: 180 files, 37.5 Gb # 6 planned full archives +1 unplanned in March (35.4Gb), 173 differential archives each of 12Mb average
+--------------------------------
+total: 180 files, 37.5 Gb       # 6 planned full archives +1 unplanned in March (35.4Gb)
+                                # 173 differential archives each of 12Mb average
 ```
 
 Compare **910.5 Gb** of storage space taken and **37.5 Gb**. We saved more than 95% of storage space and yet we have full half-year history for directory!
