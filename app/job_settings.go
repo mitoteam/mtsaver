@@ -4,19 +4,21 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
+	"time"
 
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 const DefaultSettingsFilename = ".mtsaver.yml"
 
 // Setting for archived folder
 type JobSettings struct {
-	ArchivesPath string
-	ArchiveName  string
-	FullSuffix   string
-	DiffSuffix   string
-	DateFormat   string
+	ArchivesPath string `yaml:"archives_path"`
+	ArchiveName  string `yaml:"archive_name"`
+	FullSuffix   string `yaml:"full_suffix"`
+	DiffSuffix   string `yaml:"diff_suffix"`
+	DateFormat   string `yaml:"date_format"`
 
 	//Int value from 0 = do not compress to 9 = max compression, longest time
 	CompressionLevel int `yaml:"compression_level"`
@@ -28,7 +30,7 @@ type JobSettings struct {
 	SkipCompression []string `yaml:"skip_compression"`
 
 	//Run cleanup procedure before or after archive creation (default: after)
-	Cleanup string `yaml:"cleanup"`
+	Cleanup string
 
 	MaxFullCount int `yaml:"max_full_count"`
 
@@ -58,6 +60,33 @@ func (js *JobSettings) LoadFromFile(path string) {
 	if err != nil {
 		log.Fatalf("Error parsing yaml: %v", err)
 	}
+}
+
+func (js *JobSettings) SaveToFile(path string, comment string) error {
+	settings_yaml := &yaml.Node{}
+
+	if err := settings_yaml.Encode(js); err != nil {
+		log.Fatalln(err)
+	}
+
+	if len(settings_yaml.Content) > 0 {
+		settings_yaml.Content[0].HeadComment = Global.AppName + " directory settings file" +
+			"\n# " + strings.ReplaceAll(comment, "\n", "\n# ") +
+			"\n# Created on: " + time.Now().Format(time.RFC3339) +
+			"\n#\n\n"
+	}
+
+	file_yaml, err := yaml.Marshal(settings_yaml)
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	if err := os.WriteFile(path, file_yaml, 0644); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (js *JobSettings) Print() {
