@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"errors"
+	"fmt"
 	"mtsaver/app"
 
 	"github.com/spf13/cobra"
@@ -20,6 +21,15 @@ func init() {
 			//Options checks
 			if app.JobRuntimeOptions.ForceFull && app.JobRuntimeOptions.ForceDiff {
 				return errors.New("can not force both full and differential backups simultaneously")
+			}
+
+			//Options messages
+			if app.JobRuntimeOptions.ForceFull {
+				fmt.Println("Full backup forced.")
+			}
+
+			if app.JobRuntimeOptions.ForceDiff {
+				fmt.Println("Differential backup forced.")
 			}
 
 			return nil
