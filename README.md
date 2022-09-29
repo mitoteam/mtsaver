@@ -1,4 +1,4 @@
-# mtsaver
+# mtsaver - differential backup archives management (7-zip based)
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/mitoteam/mtsaver)](https://goreportcard.com/report/github.com/mitoteam/mtsaver)
 ![GitHub](https://img.shields.io/github/license/mitoteam/mtsaver)
@@ -22,3 +22,4 @@ Run `mtsaver help` for help.
 ## Inspired by
 - https://www.cobiansoft.com/about.html
 - https://nagimov.me/post/simple-differential-and-incremental-backups-using-7-zip/
+- https://www.7-zip.org
