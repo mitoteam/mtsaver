@@ -171,11 +171,11 @@ func (job *Job) LoadSettings() {
 	}
 
 	if s.MaxFullCount < 1 {
-		log.Fatalln("Minumum value for max_full_count is 1")
+		log.Fatalln("Minimum value for max_full_count is 1")
 	}
 
 	if s.MaxDiffCount < 0 {
-		log.Fatalln("Minumum value for max_diff_count is 0")
+		log.Fatalln("Minimum value for max_diff_count is 0")
 	}
 }
 
