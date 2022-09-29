@@ -42,16 +42,16 @@ type JobSettings struct {
 	MaxTotalDiffSizePercent int `yaml:"max_total_diff_size_percent"`
 }
 
-func (js *JobSettings) LoadFromFile(filePath string) {
+func (js *JobSettings) LoadFromFile(path string) {
 	//try to load only if it exists
-	if _, err := os.Stat(filePath); err != nil {
+	if !IsFileExists(path) {
 		return
 	}
 
-	yamlFile, err := os.ReadFile(filePath)
+	yamlFile, err := os.ReadFile(path)
 
 	if err != nil {
-		log.Fatalf("Error while reading %v file: %v", filePath, err)
+		log.Fatalf("Error while reading %v file: %v", path, err)
 	}
 
 	err = yaml.Unmarshal(yamlFile, js)

@@ -19,13 +19,7 @@ type Job struct {
 }
 
 func NewJob(path string) (*Job, error) {
-	file_info, err := os.Stat(path)
-
-	if err != nil {
-		return nil, err
-	}
-
-	if !file_info.IsDir() {
+	if !IsDirExists(path) {
 		return nil, errors.New("\"" + path + "\" directory does not exists")
 	}
 
