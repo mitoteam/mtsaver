@@ -1,4 +1,6 @@
-# mtsaver - differential backup archives management (7-zip based)
+# mtsaver - differential backup archives management
+
+Based on 7-Zip arhiver available for all major platforms.
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/mitoteam/mtsaver)](https://goreportcard.com/report/github.com/mitoteam/mtsaver)
 ![GitHub](https://img.shields.io/github/license/mitoteam/mtsaver)
