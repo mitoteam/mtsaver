@@ -1,7 +1,5 @@
 # mtsaver - differential backup archives management
 
-Based on 7-Zip arhiver available for all major platforms.
-
 [![Go Report Card](https://goreportcard.com/badge/github.com/mitoteam/mtsaver)](https://goreportcard.com/report/github.com/mitoteam/mtsaver)
 ![GitHub](https://img.shields.io/github/license/mitoteam/mtsaver)
 
@@ -11,9 +9,9 @@ Based on 7-Zip arhiver available for all major platforms.
 [![GitHub contributors](https://img.shields.io/github/contributors-anon/mitoteam/mtsaver)](https://github.com/mitoteam/mtsaver/graphs/contributors)
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/y/mitoteam/mtsaver)](https://github.com/mitoteam/mtsaver/commits)
 
-7-Zip based simple directory backup command line solution.
+Simple directory differential backup command line solution. Based on 7-Zip archiver available for all major platforms.
 
-Trying to be self-explainatory (`mtsaver help`). More docs will be added later.
+Trying to be self-explainatory (`mtsaver help`). More docs and manuals are being added.
 
 ## Basic idea
 
