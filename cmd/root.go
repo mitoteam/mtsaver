@@ -38,7 +38,7 @@ func init() {
 		&app.JobRuntimeOptions.SettingsFilename,
 		"settings",
 		app.DefaultSettingsFilename,
-		"Path to directory settings file",
+		"Filename or path to directory settings file. Used by 'run', 'info', 'init' commands. If filename only given it is looked for in directory itself.",
 	)
 }
 
