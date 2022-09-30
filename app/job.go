@@ -2,7 +2,6 @@ package app
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"log"
 	"mtsaver/mttools"
@@ -20,11 +19,10 @@ type Job struct {
 }
 
 func NewJob(path string) (*Job, error) {
-	if !mttools.IsDirExists(path) {
-		return nil, errors.New("\"" + path + "\" directory does not exists")
+	full_path, err := mttools.GetDirAbsolutePath(path)
+	if err != nil {
+		return nil, err
 	}
-
-	full_path, _ := filepath.Abs(path)
 
 	var job = &Job{
 		Path: full_path,
