@@ -19,8 +19,8 @@ func init() {
 			}
 
 			//Options checks
-			if app.JobRuntimeOptions.ForceFull && app.JobRuntimeOptions.ForceDiff {
-				return errors.New("can not force both full and differential backups simultaneously")
+			if app.CountValues(true, app.JobRuntimeOptions.ForceFull, app.JobRuntimeOptions.ForceDiff, app.JobRuntimeOptions.ForceCleanup) > 1 {
+				return errors.New("can not force both full or differential backups or cleanup simultaneously")
 			}
 
 			//Options messages
@@ -30,6 +30,10 @@ func init() {
 
 			if app.JobRuntimeOptions.ForceDiff {
 				fmt.Println("Differential backup forced.")
+			}
+
+			if app.JobRuntimeOptions.ForceCleanup {
+				fmt.Println("Cleanup forced.")
 			}
 
 			return nil
@@ -66,6 +70,11 @@ func init() {
 	cmd.Flags().BoolVar(
 		&app.JobRuntimeOptions.ForceDiff, "force-diff", false,
 		"Create differential archive even if conditions in settings require full one. This option can not be used if there are no full archives created yet.",
+	)
+
+	cmd.Flags().BoolVar(
+		&app.JobRuntimeOptions.ForceCleanup, "cleanup", false,
+		"Delete outdated archives without creating new ones.",
 	)
 
 	rootCmd.AddCommand(cmd)

@@ -42,8 +42,12 @@ func (job *Job) Run() error {
 	job.ScanArchive()
 	//job.Archive.Dump()
 
-	if job.Settings.Cleanup == "before" {
+	if job.Settings.Cleanup == "before" || JobRuntimeOptions.ForceCleanup {
 		job.cleanup()
+
+		if JobRuntimeOptions.ForceCleanup {
+			return nil
+		}
 	}
 
 	if JobRuntimeOptions.ForceFull {
