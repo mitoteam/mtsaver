@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"mtsaver/app"
+	"mtsaver/mttools"
 
 	"github.com/spf13/cobra"
 )
@@ -30,7 +31,7 @@ func init() {
 
 			filename := job.SettingsFilename()
 
-			if app.IsFileExists(filename) {
+			if mttools.IsFileExists(filename) {
 				return errors.New("can not initialize existing file: " + filename)
 			}
 

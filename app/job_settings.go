@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 	"log"
+	"mtsaver/mttools"
 	"os"
 	"reflect"
 	"strings"
@@ -47,7 +48,7 @@ type JobSettings struct {
 
 func (js *JobSettings) LoadFromFile(path string) {
 	//try to load only if it exists
-	if !IsFileExists(path) {
+	if !mttools.IsFileExists(path) {
 		return
 	}
 

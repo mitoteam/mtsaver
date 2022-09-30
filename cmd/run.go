@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"mtsaver/app"
+	"mtsaver/mttools"
 
 	"github.com/spf13/cobra"
 )
@@ -19,7 +20,7 @@ func init() {
 			}
 
 			//Options checks
-			if app.CountValues(true, app.JobRuntimeOptions.ForceFull, app.JobRuntimeOptions.ForceDiff, app.JobRuntimeOptions.ForceCleanup) > 1 {
+			if mttools.CountValues(true, app.JobRuntimeOptions.ForceFull, app.JobRuntimeOptions.ForceDiff, app.JobRuntimeOptions.ForceCleanup) > 1 {
 				return errors.New("can not force both full or differential backups or cleanup simultaneously")
 			}
 

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"mtsaver/mttools"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -19,7 +20,7 @@ type Job struct {
 }
 
 func NewJob(path string) (*Job, error) {
-	if !IsDirExists(path) {
+	if !mttools.IsDirExists(path) {
 		return nil, errors.New("\"" + path + "\" directory does not exists")
 	}
 
