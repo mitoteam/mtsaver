@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -12,11 +13,13 @@ import (
 )
 
 type JobArchiveFile struct {
-	Name   string
-	Path   string
-	IsFull bool
-	Size   int64
-	Time   time.Time
+	Name    string    //filename only
+	Path    string    //full path
+	IsFull  bool      //full or diff archive
+	Size    int64     //file size
+	ModTime time.Time //modification time
+	Time    time.Time //timestamp from archive name
+	Age     int       //age in days
 }
 
 type JobArchiveFullItem struct {
@@ -67,18 +70,37 @@ func (job *Job) ScanArchive() {
 		}
 
 		info, err := value.Info()
-		if err == nil {
-			job.Archive.FilesList = append(
-				job.Archive.FilesList,
-				JobArchiveFile{
-					Name:   value.Name(),
-					Path:   filepath.Join(job.Settings.ArchivesPath, value.Name()),
-					IsFull: strings.HasSuffix(value.Name(), full_suffix),
-					Size:   info.Size(),
-					Time:   info.ModTime(),
-				},
-			)
+		if err != nil {
+			continue
 		}
+
+		archive_file := JobArchiveFile{
+			Name:    value.Name(),
+			Path:    filepath.Join(job.Settings.ArchivesPath, value.Name()),
+			IsFull:  strings.HasSuffix(value.Name(), full_suffix),
+			Size:    info.Size(),
+			ModTime: info.ModTime(),
+		}
+
+		//try to parse timestamp
+		var filename_time time.Time
+
+		matches := re.FindAllStringSubmatch(archive_file.Name, 1)
+		if len(matches) > 0 {
+			if len(matches[0]) > 1 {
+				filename_time, _ = time.Parse(job.Settings.DateFormat, matches[0][1])
+			}
+		}
+
+		if filename_time.IsZero() {
+			archive_file.Time = archive_file.ModTime
+		} else {
+			archive_file.Time = filename_time
+		}
+
+		archive_file.Age = int(math.Ceil(time.Since(archive_file.Time).Hours() / 24))
+
+		job.Archive.FilesList = append(job.Archive.FilesList, archive_file)
 	}
 
 	//sort by time
@@ -145,7 +167,7 @@ func (ja *JobArchive) Dump(die bool) {
 	for index := range ja.FullItemList {
 		full_item := &ja.FullItemList[index]
 
-		fmt.Printf("FULL: %s, size: %d, diff_size: %d%%\n", full_item.File.Name, full_item.File.Size, full_item.TotalDiffSizePercent)
+		fmt.Printf("FULL: %s, size: %d, age: %d, diff_size: %d%%\n", full_item.File.Name, full_item.File.Size, full_item.File.Age, full_item.TotalDiffSizePercent)
 
 		for _, diff_item := range full_item.DiffItemList {
 			fmt.Printf("    DIFF: %s, size %d %d%%\n", diff_item.File.Name, diff_item.File.Size, diff_item.DiffSizePercent)
