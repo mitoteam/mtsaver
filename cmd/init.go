@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(&cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "init [/path/to/directory]",
 		Short: "Creates settings file with defaults. If no path is given current directory used. --settings option can be used to specify settings file name or location explicitly.",
 
@@ -18,6 +18,12 @@ func init() {
 			job, err := app.NewJobFromArgs(args)
 			if err != nil {
 				return err
+			}
+
+			if app.JobRuntimeOptions.DefaultsFrom != "" {
+				if err := job.Settings.LoadFromFile(app.JobRuntimeOptions.DefaultsFrom); err != nil {
+					return err
+				}
 			}
 
 			filename := job.SettingsFilename()
@@ -40,5 +46,12 @@ want to change and remove all others to keep this simple.
 
 			return nil
 		},
-	})
+	}
+
+	cmd.Flags().StringVar(
+		&app.JobRuntimeOptions.DefaultsFrom, "defaults-from", "",
+		"settings file used to read defaults from before generating new setting with full options set",
+	)
+
+	rootCmd.AddCommand(cmd)
 }

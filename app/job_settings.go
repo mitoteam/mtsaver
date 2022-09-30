@@ -1,6 +1,7 @@
 package app
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"mtsaver/mttools"
@@ -20,7 +21,7 @@ type JobSettings struct {
 	ArchiveName  string `yaml:"archive_name" yaml_comment:"base archive name (appended with timestamp and suffix)"`
 	FullSuffix   string `yaml:"full_suffix" yaml_comment:"suffix for full archives"`
 	DiffSuffix   string `yaml:"diff_suffix" yaml_comment:"suffix for differential archives"`
-	DateFormat   string `yaml:"date_format" yaml_comment:"archive filename timestamp format, don't touch, Go's time formatting is crazyness https://mttm.ml/go-time-format"`
+	DateFormat   string `yaml:"date_format" yaml_comment:"archive filename timestamp format. Don't touch it! Go's time formatting is crazyness https://mttm.ml/go-time-format"`
 
 	//Int value from 0 = do not compress to 9 = max compression, longest time
 	CompressionLevel int `yaml:"compression_level" yaml_comment:"7-Zip compression level from 0 to 9"`
@@ -47,22 +48,24 @@ type JobSettings struct {
 	MaxTotalDiffSizePercent int `yaml:"max_total_diff_size_percent" yaml_comment:"total size of differential archives since latest full archive in percents to force new full archive next run, 0 = not set"`
 }
 
-func (js *JobSettings) LoadFromFile(path string) {
+func (js *JobSettings) LoadFromFile(path string) error {
 	//try to load only if it exists
 	if !mttools.IsFileExists(path) {
-		return
+		return errors.New("File is not accessible: " + path)
 	}
 
 	yamlFile, err := os.ReadFile(path)
 
 	if err != nil {
-		log.Fatalf("Error while reading %v file: %v", path, err)
+		return err
 	}
 
 	err = yaml.Unmarshal(yamlFile, js)
 	if err != nil {
-		log.Fatalf("Error parsing yaml: %v", err)
+		return err
 	}
+
+	return nil
 }
 
 func (js *JobSettings) SaveToFile(path string, comment string) error {

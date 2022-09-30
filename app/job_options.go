@@ -5,6 +5,7 @@ var JobRuntimeOptions struct {
 	ForceFull        bool
 	ForceDiff        bool
 	SettingsFilename string
+	DefaultsFrom     string
 }
 
 func init() {

@@ -132,15 +132,21 @@ func (job *Job) LoadSettings() {
 		MaxDiffCount:     20,
 	}
 
-	job.Settings.LoadFromFile(job.SettingsFilename())
+	if mttools.IsFileExists(job.SettingsFilename()) {
+		if err := job.Settings.LoadFromFile(job.SettingsFilename()); err != nil {
+			log.Fatalln(err)
+		}
+	}
 
 	var s = &job.Settings
 
-	name := filepath.Base(job.Path)
+	// set defaults if something is missing in file
 
 	if s.DateFormat == "" {
 		s.DateFormat = "2006-01-02_15-04-05"
 	}
+
+	name := filepath.Base(job.Path)
 
 	if len(s.ArchiveName) == 0 {
 		s.ArchiveName = name
