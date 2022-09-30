@@ -18,14 +18,23 @@ type Job struct {
 	Archive  JobArchive
 }
 
-func NewJob(path string) (*Job, error) {
-	full_path, err := mttools.GetDirAbsolutePath(path)
+// Creates new Job. If first argument given - using it as path to directory. If absent - using current directory.
+func NewJobFromArgs(args []string) (*Job, error) {
+	var path string
+
+	if len(args) > 0 {
+		path = args[0]
+	} else {
+		path = "." //current directory
+	}
+
+	path, err := mttools.GetDirAbsolutePath(path)
 	if err != nil {
 		return nil, err
 	}
 
 	var job = &Job{
-		Path: full_path,
+		Path: path,
 	}
 
 	job.LoadSettings()
@@ -38,16 +47,11 @@ func (job *Job) Run() error {
 		return err
 	}
 
-	job.ScanArchive()
-	//job.Archive.Dump()
-
-	if job.Settings.Cleanup == "before" || JobRuntimeOptions.ForceCleanup {
-		job.cleanup()
-
-		if JobRuntimeOptions.ForceCleanup {
-			return nil
-		}
+	if job.Settings.Cleanup == "before" {
+		job.Cleanup()
 	}
+
+	job.ScanArchive()
 
 	if JobRuntimeOptions.ForceFull {
 		job.createArchive(true, "")
@@ -90,12 +94,8 @@ func (job *Job) Run() error {
 	}
 
 	if job.Settings.Cleanup == "after" {
-		job.ScanArchive() //new archives may have been created
-		job.cleanup()
+		job.Cleanup()
 	}
-
-	job.ScanArchive()
-	//job.Archive.Dump(false)
 
 	return nil
 }
@@ -271,11 +271,21 @@ func runSevenZip(arguments []string) {
 	cmd.Wait()
 }
 
-func (job *Job) cleanup() {
+func (job *Job) Cleanup() error {
+	//do cleanup only if archives directory exists
+	if !mttools.IsDirExists(job.Settings.ArchivesPath) {
+		return nil
+	}
+
+	//always rescan archives before cleaning up
+	job.ScanArchive()
+
 	//delete FULL items
 	for len(job.Archive.FullItemList) > job.Settings.MaxFullCount {
 		job.Archive.FullItemList[0].Unlink()
 
 		job.Archive.FullItemList = job.Archive.FullItemList[1:]
 	}
+
+	return nil
 }

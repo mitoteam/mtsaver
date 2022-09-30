@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"mtsaver/app"
 
 	"github.com/spf13/cobra"
@@ -13,7 +12,7 @@ func init() {
 		Use:   "info [/path/to/directory]",
 		Short: "Print information about system, environment etc. If path is given settings for that folder are printed as well.",
 
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			fmt.Println(" --- " + app.Global.AppName + " --- ")
 			fmt.Println("Version: " + app.Global.Version)
 			fmt.Println("Commit: " + app.Global.Commit)
@@ -23,9 +22,9 @@ func init() {
 			fmt.Println()
 
 			if len(args) > 0 {
-				job, err := app.NewJob(args[0])
+				job, err := app.NewJobFromArgs(args)
 				if err != nil {
-					log.Fatalln(err)
+					return err
 				}
 
 				fmt.Println(" --- Directory ---")
@@ -35,6 +34,8 @@ func init() {
 
 				fmt.Println()
 			}
+
+			return nil
 		},
 	})
 }

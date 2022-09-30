@@ -12,7 +12,8 @@ import (
 func init() {
 	cmd := &cobra.Command{
 		Use:   "run [/path/to/directory]",
-		Short: "Runs backup procedure for path. If no path is given current directory is used.",
+		Short: "Runs backup procedure for directory",
+		Long:  "Runs backup procedure for directory. If no path is given current directory is used.",
 
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := CallParentPreRun(cmd, args); err != nil {
@@ -20,8 +21,8 @@ func init() {
 			}
 
 			//Options checks
-			if mttools.CountValues(true, app.JobRuntimeOptions.ForceFull, app.JobRuntimeOptions.ForceDiff, app.JobRuntimeOptions.ForceCleanup) > 1 {
-				return errors.New("can not force both full or differential backups or cleanup simultaneously")
+			if mttools.CountValues(true, app.JobRuntimeOptions.ForceFull, app.JobRuntimeOptions.ForceDiff) > 1 {
+				return errors.New("can not force both full and differential backups simultaneously")
 			}
 
 			//Options messages
@@ -33,24 +34,11 @@ func init() {
 				fmt.Println("Differential backup forced.")
 			}
 
-			if app.JobRuntimeOptions.ForceCleanup {
-				fmt.Println("Cleanup forced.")
-			}
-
 			return nil
 		},
 
 		RunE: func(cmd *cobra.Command, args []string) error {
-			//Check path
-			var path string
-			if len(args) > 0 {
-				path = args[0]
-			} else {
-				path = "." //current directory
-			}
-
-			// run Job
-			job, err := app.NewJob(path)
+			job, err := app.NewJobFromArgs(args)
 			if err != nil {
 				return err
 			}
@@ -71,11 +59,6 @@ func init() {
 	cmd.Flags().BoolVar(
 		&app.JobRuntimeOptions.ForceDiff, "force-diff", false,
 		"Create differential archive even if conditions in settings require full one. This option can not be used if there are no full archives created yet.",
-	)
-
-	cmd.Flags().BoolVar(
-		&app.JobRuntimeOptions.ForceCleanup, "cleanup", false,
-		"Delete outdated archives without creating new ones.",
 	)
 
 	rootCmd.AddCommand(cmd)

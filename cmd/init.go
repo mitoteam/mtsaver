@@ -15,16 +15,7 @@ func init() {
 		Short: "Creates settings file with defaults. If no path is given current directory used. --settings option can be used to specify settings file name or location explicitly.",
 
 		RunE: func(cmd *cobra.Command, args []string) error {
-			//Check path
-			var path string
-			if len(args) > 0 {
-				path = args[0]
-			} else {
-				path = "." //current directory
-			}
-
-			// run Job
-			job, err := app.NewJob(path)
+			job, err := app.NewJobFromArgs(args)
 			if err != nil {
 				return err
 			}
