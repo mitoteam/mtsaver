@@ -279,12 +279,19 @@ func (job *Job) Cleanup() error {
 
 	//always rescan archives before cleaning up
 	job.ScanArchive()
+	//job.Archive.Dump(true)
 
 	//delete FULL items
-	for len(job.Archive.FullItemList) > job.Settings.MaxFullCount {
-		job.Archive.FullItemList[0].Unlink()
+	out_of_window_count := len(job.Archive.FullItemList) - job.Settings.MaxFullCount
 
-		job.Archive.FullItemList = job.Archive.FullItemList[1:]
+	for i := 0; i < out_of_window_count; i++ {
+		if job.Settings.KeepAtLeast > 0 {
+			if job.Archive.FullItemList[i].File.Age < job.Settings.KeepAtLeast {
+				continue
+			}
+		}
+
+		job.Archive.FullItemList[i].Unlink()
 	}
 
 	return nil

@@ -35,6 +35,7 @@ type JobSettings struct {
 	Cleanup string `yaml_comment:"do old archives cleanup before or after archiving"`
 
 	MaxFullCount int `yaml:"max_full_count" yaml_comment:"maximum full archives to keep"`
+	KeepAtLeast  int `yaml:"keep_at_least" yaml_comment:"do not remove full arhives if they younger than this count of days"`
 
 	//Maximum number of diff archives to have after full backup
 	MaxDiffCount int `yaml:"max_diff_count" yaml_comment:"maximum differentiam archives to create before creating new full archive"`
