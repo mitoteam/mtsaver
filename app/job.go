@@ -215,6 +215,13 @@ func (job *Job) createArchive(is_full bool, full_archive_path string) {
 		"-sccUTF-8", //console output encoding
 	)
 
+	//turn on solid mode for archives
+	if JobRuntimeOptions.Solid || job.Settings.Solid {
+		common_arguments = append(common_arguments,
+			"-ms=on",
+		)
+	}
+
 	//exclusions
 	for _, pattern := range job.Settings.Exclude {
 		common_arguments = append(common_arguments, "-xr!"+pattern)

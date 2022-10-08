@@ -26,6 +26,9 @@ type JobSettings struct {
 	//Int value from 0 = do not compress to 9 = max compression, longest time
 	CompressionLevel int `yaml:"compression_level" yaml_comment:"7-Zip compression level from 0 to 9"`
 
+	//Create solid archives
+	Solid bool `yaml_comment:"create solid 7-zip archives"`
+
 	//List of patterns to exclude from archive
 	Exclude []string `yaml_comment:"list of patterns to exclude from archiving"`
 

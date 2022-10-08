@@ -61,5 +61,10 @@ func init() {
 		"Create differential archive even if conditions in settings require full one. This option can not be used if there are no full archives created yet.",
 	)
 
+	cmd.Flags().BoolVar(
+		&app.JobRuntimeOptions.Solid, "solid", false,
+		"Create solid archives.",
+	)
+
 	rootCmd.AddCommand(cmd)
 }
