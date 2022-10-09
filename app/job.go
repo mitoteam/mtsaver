@@ -57,7 +57,7 @@ func (job *Job) Run() error {
 		job.createArchive(true, "")
 	} else if JobRuntimeOptions.ForceDiff {
 		if len(job.Archive.FullItemList) == 0 {
-			log.Fatalln("can not force differentian backup because no full backups found.")
+			log.Fatalln("can not force differential backup because no full backups found.")
 		}
 
 		job.createArchive(false, job.Archive.FullItemList[len(job.Archive.FullItemList)-1].File.Path)
