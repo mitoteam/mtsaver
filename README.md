@@ -20,7 +20,8 @@ Lets assume we have huge enought working directory (~12 Gb) we want to backup pe
 Day by day we work with very small amount of files: some new documents added, rarely some old ones are edited, even more rarely something being deleted.
 
 Packing folder with 7-Zip creates 5Gb arhive. Creating 180 archives (one per day) will give us something like this:
-```
+
+```text
 backup_2022-01-01.7z 5Gb
 backup_2022-01-02.7z 5Gb
 backup_2022-01-03.7z 5Gb
@@ -44,7 +45,7 @@ This is so called differential backups: we can have full archive with all files 
 
 So for example above we will end with following files set:
 
-```
+```text
 backup_2022-01-01_FULL.7z 5Gb
 backup_2022-01-02_DIFF.7z 100Kb # changes since Jan-01 only!
 backup_2022-01-03_DIFF.7z 150Kb # changes since Jan-01 only
@@ -76,6 +77,7 @@ Build from sources (`make`) or unpack one of pre-compiled binaries.
 Run `mtsaver help` for help.
 
 ## Inspired by
+
 - https://www.cobiansoft.com/about.html
 - https://nagimov.me/post/simple-differential-and-incremental-backups-using-7-zip/
 - https://www.7-zip.org
