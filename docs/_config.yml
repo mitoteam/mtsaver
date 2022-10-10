@@ -2,4 +2,7 @@
 lsi: false
 safe: true
 incremental: false
+theme: architect
+title: mtsaver documentation
+description: 7zip-based differential backups management utility
 ...
