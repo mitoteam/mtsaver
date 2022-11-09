@@ -34,8 +34,8 @@ func init() {
 
 			comment := `
 File created automatically by 'mtsaver init' command. There are all available
-options listed here with its default values. Recomendation is to edit options you
-want to change and remove all others to keep this simple.
+options listed here with its default values. Recommendation is to edit options you
+want to change and remove all others to keep this as simple as possible.
 `
 
 			if err := job.Settings.SaveToFile(filename, comment); err != nil {
