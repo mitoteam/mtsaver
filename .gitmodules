@@ -1,0 +1,5 @@
+[submodule "mttools"]
+	path = mttools
+	url = https://github.com/mitoteam/mttools.git
+	branch = main
+	ignore = all # ignore changes
