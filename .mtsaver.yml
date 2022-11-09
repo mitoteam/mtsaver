@@ -1,19 +1,35 @@
 # This file is just a test example. Please see documentation for better options explanation.
-compression_level: 9
-solid: yes
-skip_compression:
-  - "*.7z"
+# Created on: 2022-11-09T14:37:51+03:00
+#
 
+# suffix for full archives
+full_suffix: FULL
+# suffix for differential archives
+diff_suffix: DIFF
+
+# 7-Zip compression level from 0 to 9
+compression_level: 9
+# create solid 7-zip archives
+solid: true
+
+# list of patterns to exclude from archiving
 exclude:
   - ".vscode"
   - ".git"
   - "*.exe"
 
+
+# do old archives cleanup before or after archiving
+cleanup: after
+
+# maximum full archives to keep
 max_full_count: 3
+# do not remove full archives if they younger than this count of days
 keep_at_least: 5
 
+# maximum differential archives to create before creating new full archive
 max_diff_count: 2
+# last differential archive size in percents to force new full archive next run, 0 = not set
 max_diff_size_percent: 50
+# total size of differential archives since latest full archive in percents to force new full archive next run, 0 = not set
 max_total_diff_size_percent: 80
-
-cleanup: after
