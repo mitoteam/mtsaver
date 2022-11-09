@@ -17,7 +17,7 @@ const DefaultSettingsFilename = ".mtsaver.yml"
 
 // Setting for archived folder
 type JobSettings struct {
-	ArchivesPath string `yaml:"archives_path" yaml_comment:"full path to directory to create arhives in"`
+	ArchivesPath string `yaml:"archives_path" yaml_comment:"full path to directory to create archives in"`
 	ArchiveName  string `yaml:"archive_name" yaml_comment:"base archive name (appended with timestamp and suffix)"`
 	FullSuffix   string `yaml:"full_suffix" yaml_comment:"suffix for full archives"`
 	DiffSuffix   string `yaml:"diff_suffix" yaml_comment:"suffix for differential archives"`
@@ -39,10 +39,10 @@ type JobSettings struct {
 	Cleanup string `yaml_comment:"do old archives cleanup before or after archiving"`
 
 	MaxFullCount int `yaml:"max_full_count" yaml_comment:"maximum full archives to keep"`
-	KeepAtLeast  int `yaml:"keep_at_least" yaml_comment:"do not remove full arhives if they younger than this count of days"`
+	KeepAtLeast  int `yaml:"keep_at_least" yaml_comment:"do not remove full archives if they younger than this count of days"`
 
 	//Maximum number of diff archives to have after full backup
-	MaxDiffCount int `yaml:"max_diff_count" yaml_comment:"maximum differentiam archives to create before creating new full archive"`
+	MaxDiffCount int `yaml:"max_diff_count" yaml_comment:"maximum differential archives to create before creating new full archive"`
 
 	//Maximum latest diff size IN PERCENTS to force full backup
 	MaxDiffSizePercent int `yaml:"max_diff_size_percent" yaml_comment:"last differential archive size in percents to force new full archive next run, 0 = not set"`
