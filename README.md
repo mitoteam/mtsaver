@@ -11,15 +11,15 @@
 
 Simple directory differential backup command line solution. Based on 7-Zip archiver available for all major platforms.
 
-Trying to be self-explainatory (`mtsaver help`). More docs and manuals are being added.
+Trying to be self-explanatory (`mtsaver help`). More docs and manuals are being added.
 
 ## Basic idea
 
-Lets assume we have huge enought working directory (~12 Gb) we want to backup periodicly (for example _daily_). And we want to have history of its changes (for example to be able to restore some file deleted forty two backups ago). Lets assume we want to keep history for _180 days_.
+Lets assume we have huge enoughs working directory (~12 Gb) we want to backup periodically (for example _daily_). And we want to have history of its changes (for example to be able to restore some file deleted forty two backups ago). Lets assume we want to keep history for _180 days_.
 
 Day by day we work with very small amount of files: some new documents added, rarely some old ones are edited, even more rarely something being deleted.
 
-Packing folder with 7-Zip creates 5Gb arhive. Creating 180 archives (one per day) will give us something like this:
+Packing folder with 7-Zip creates 5Gb archive. Creating 180 archives (one per day) will give us something like this:
 
 ```text
 backup_2022-01-01.7z 5Gb
@@ -36,12 +36,12 @@ backup_2022-06-30.7z 5.1Gb
 total: 180 files, 910.5 Gb
 ```
 
-Problems: 1) it takes 910Gb of storage 2) takes a lot of time to create each archive 3) requires some manual file management to delete outdated arhives beyond 180 days window
+Problems: 1) it takes 910Gb of storage 2) takes a lot of time to create each archive 3) requires some manual file management to delete outdated archives beyond 180 days window
 
 **mtsaver** is a solution to **pack only those new, changed or removed files** (thank you 7-Zip for anti-items support!) saving time and storage.
 This is so called differential backups: we can have full archive with all files packed. Than we create differential archive containing only changed files.
 
-**mtsaver** allows very flexible setups. For example: Create full archive once per month. Each day create differential archive. If differential archive becames larger than 50% of full archive do not wait till month end and create new full archive immediately. Store maximum 6 full archives and delete older ones with all differential archives attached. But keep full archives at least 180 days even if there are more than 6 of them.
+**mtsaver** allows very flexible setups. For example: Create full archive once per month. Each day create differential archive. If differential archive becomes larger than 50% of full archive do not wait till month end and create new full archive immediately. Store maximum 6 full archives and delete older ones with all differential archives attached. But keep full archives at least 180 days even if there are more than 6 of them.
 
 So for example above we will end with following files set:
 
