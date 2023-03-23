@@ -1,7 +1,7 @@
 package app
 
 import (
-	"mtsaver/mttools"
+	"github.com/mitoteam/mttools"
 )
 
 const DefaultSettingsFilename = ".mtsaver.yml"
@@ -12,7 +12,7 @@ type JobSettings struct {
 	ArchiveName  string `yaml:"archive_name" yaml_comment:"base archive name (appended with timestamp and suffix)"`
 	FullSuffix   string `yaml:"full_suffix" yaml_comment:"suffix for full archives"`
 	DiffSuffix   string `yaml:"diff_suffix" yaml_comment:"suffix for differential archives"`
-	DateFormat   string `yaml:"date_format" yaml_comment:"archive filename timestamp format. Don't touch it! Go's time formatting is crazyness https://mttm.ml/go-time-format"`
+	DateFormat   string `yaml:"date_format" yaml_comment:"archive filename timestamp format. Don't touch it! Go's time formatting is craziness https://mttm.ml/go-time-format"`
 
 	//Int value from 0 = do not compress to 9 = max compression, longest time
 	CompressionLevel int `yaml:"compression_level" yaml_comment:"7-Zip compression level from 0 to 9"`

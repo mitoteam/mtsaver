@@ -4,7 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"mtsaver/app"
-	"mtsaver/mttools"
+
+	"github.com/mitoteam/mttools"
 
 	"github.com/spf13/cobra"
 )

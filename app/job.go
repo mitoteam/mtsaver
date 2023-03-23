@@ -4,12 +4,13 @@ import (
 	"bufio"
 	"fmt"
 	"log"
-	"mtsaver/mttools"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strconv"
 	"time"
+
+	"github.com/mitoteam/mttools"
 )
 
 type Job struct {
@@ -290,7 +291,7 @@ func (job *Job) Cleanup() error {
 		return nil
 	}
 
-	//always rescan archives before cleaning up
+	//always re-scan archives before cleaning up
 	job.ScanArchive()
 	//job.Archive.Dump(true)
 
