@@ -84,7 +84,7 @@ scoop bucket add mitoteam https://github.com/mitoteam/scoop-bucket
 * Install:
 
 ```sh
-scoop install mitoteam/mtsaver
+scoop install mtsaver
 ```
 
 Details: [scoop-bucket](https://github.com/mitoteam/scoop-bucket).

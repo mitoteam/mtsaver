@@ -1,6 +1,6 @@
 module mtsaver
 
-go 1.20
+go 1.23
 
 require (
 	github.com/mitoteam/mttools v0.0.0-20230323055506-b79cfb7c6c04
