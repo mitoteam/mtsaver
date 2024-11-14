@@ -23,6 +23,7 @@ all: clean build-dist
 build-dist: build-linux64 build-linux32 build-windows32 build-windows64
 	rm -f ${DIST_DIR}/${APP_NAME}
 	rm -f ${DIST_DIR}/${APP_NAME}.exe
+	sha256sum ${DIST_DIR}/*.7z > ${DIST_DIR}/checksums.sha256
 
 
 .PHONY: build-windows32

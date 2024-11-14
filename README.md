@@ -69,16 +69,37 @@ total: 180 files, 37.5 Gb       # 6 planned full archives +1 unplanned in March 
                                 # 173 differential archives each of 12Mb average
 ```
 
-Compare **910.5 Gb** of storage space taken and **37.5 Gb**. We saved more than 95% of storage space and yet we have full half-year history for directory!
+Compare **910.5 Gb** of storage space taken and **37.5 Gb**. We saved more than 95% of storage space and yet we have full half-year day-by-day history for directory!
+
+## Installation
+
+### Using Scoop (Windows)
+
+* Add bucket:
+
+```sh
+scoop bucket add mitoteam https://github.com/mitoteam/scoop-bucket
+```
+
+* Install:
+
+```sh
+scoop install mitoteam/mtsaver
+```
+
+Details: [scoop-bucket](https://github.com/mitoteam/scoop-bucket).
+
+### Manual installation (Windows or Linux)
+
+* Download latest release from [Releases](https://github.com/mitoteam/mtsaver/releases) page.
+* Unpack with 7-zip.
 
 ## Usage
-
-Build from sources (`make`) or unpack one of pre-compiled binaries.
 
 Run `mtsaver help` for help.
 
 ## Inspired by
 
-- https://www.cobiansoft.com/about.html
-- https://nagimov.me/post/simple-differential-and-incremental-backups-using-7-zip/
-- https://www.7-zip.org
+* https://www.cobiansoft.com/about.html
+* https://nagimov.me/post/simple-differential-and-incremental-backups-using-7-zip/
+* https://www.7-zip.org
