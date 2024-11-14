@@ -44,6 +44,8 @@ func NewJobFromArgs(args []string) (*Job, error) {
 }
 
 func (job *Job) Run() error {
+	fmt.Printf("Starting directory backup: %s\n", job.Path)
+
 	if err := os.MkdirAll(job.Settings.ArchivesPath, 0777); err != nil {
 		return err
 	}
@@ -250,7 +252,7 @@ func (job *Job) createArchive(is_full bool, full_archive_path string) {
 	runSevenZip(basic_arguments)
 
 	//// ADD ITEMS WITHOUT COMPRESSION - works only for full archives now
-	if is_full {
+	if is_full && len(job.Settings.SkipCompression) > 0 {
 		var skip_compression_arguments = make([]string, len(common_arguments))
 		copy(skip_compression_arguments, common_arguments)
 
