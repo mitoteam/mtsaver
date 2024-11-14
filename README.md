@@ -107,6 +107,8 @@ Open created `.mtsaver.yml` file and edit settings you need. You can remove unto
 
 Run `mtsaver run` command in directory with `.mtsaver.yml` file to create new backup archive. First time it will be created as full archive. Next runs depending on conditions and settings either full or diff archives will be created and old ones will be removed.
 
+You can use any scheduler (`cron` or _Windows Task Scheduler_) to run this command regularly to have your directory backups.
+
 ## Help
 
 Run `mtsaver help` for options and commands description.
