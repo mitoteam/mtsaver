@@ -39,8 +39,21 @@ type JobSettings struct {
 
 	KeepEmptyDiff bool `yaml:"keep_empty_diff" yaml_comment:"false = delete diff archives if no files where added to it, true = keep anyway"`
 
+	KeepSameDiff bool `yaml:"keep_same_diff" yaml_comment:"false = delete diff archives if it has same sha256 hash as previous one, true = keep anyway"`
+
 	//Maximum total diffs size IN PERCENTS to force full backup
 	MaxTotalDiffSizePercent int `yaml:"max_total_diff_size_percent" yaml_comment:"total size of differential archives since latest full archive in percents to force new full archive next run, 0 = not set"`
+}
+
+// creates new settings with default values
+func NewJobSettings() JobSettings {
+	return JobSettings{
+		CompressionLevel: -1,
+		MaxFullCount:     5,
+		MaxDiffCount:     20,
+		KeepEmptyDiff:    false,
+		KeepSameDiff:     false,
+	}
 }
 
 func (js *JobSettings) LoadFromFile(path string) error {

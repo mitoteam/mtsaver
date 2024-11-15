@@ -57,6 +57,7 @@ func (job *Job) Run() error {
 	}
 
 	job.ScanArchive()
+	//job.Archive.Dump(false)
 
 	if JobRuntimeOptions.ForceFull {
 		job.createArchive(true, "")
@@ -131,12 +132,7 @@ func (job *Job) SettingsFilename() (filename string) {
 }
 
 func (job *Job) LoadSettings() {
-	job.Settings = JobSettings{
-		CompressionLevel: -1,
-		MaxFullCount:     5,
-		MaxDiffCount:     20,
-		KeepEmptyDiff:    false,
-	}
+	job.Settings = NewJobSettings()
 
 	if mttools.IsFileExists(job.SettingsFilename()) {
 		if err := job.Settings.LoadFromFile(job.SettingsFilename()); err != nil {
@@ -197,6 +193,7 @@ func (job *Job) LoadSettings() {
 func (job *Job) createArchive(is_full bool, full_archive_path string) {
 	var common_arguments = []string{} //command
 	job_archive_filename := job.getArchiveName(is_full)
+	var err error
 
 	if is_full {
 		common_arguments = append(common_arguments,
@@ -273,11 +270,41 @@ func (job *Job) createArchive(is_full bool, full_archive_path string) {
 	}
 
 	//check if empty diff was created
-	if !is_full && !job.Settings.KeepEmptyDiff && strings.Contains(main_output, "Add new data to archive: 0 files, 0 bytes") {
-		fmt.Printf("Empty diff archive created (%s). Removing.", path.Base(job_archive_filename))
+	if !is_full {
+		is_empty := strings.Contains(main_output, "Add new data to archive: 0 files, 0 bytes")
 
-		if err := os.Remove(job_archive_filename); err != nil {
-			log.Fatalf("Error deleting file %s: %s", path.Base(job_archive_filename), err)
+		if is_empty {
+			if !job.Settings.KeepEmptyDiff {
+				fmt.Printf("Empty diff archive created (%s). Removing it.", path.Base(job_archive_filename))
+
+				if err = os.Remove(job_archive_filename); err != nil {
+					log.Fatalf("Error deleting file %s: %s", path.Base(job_archive_filename), err)
+				}
+			}
+		} else {
+			if !job.Settings.KeepSameDiff {
+				if prev_archive := job.Archive.LastFile(); prev_archive != nil {
+					if !prev_archive.IsFull {
+						//log.Printf("Prev hash: %s", prev_archive.Hash)
+
+						var last_hash string
+						last_hash, err = mttools.FileSha256(job_archive_filename)
+
+						if err == nil {
+							//log.Printf("Last hash: %s", last_hash)
+
+							if len(last_hash) > 0 && last_hash == prev_archive.Hash {
+								fmt.Printf("Diff archive with same sha256 created (%s). Removing it.", path.Base(job_archive_filename))
+
+								if err = os.Remove(job_archive_filename); err != nil {
+									log.Fatalf("Error deleting file %s: %s", path.Base(job_archive_filename), err)
+								}
+
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 }

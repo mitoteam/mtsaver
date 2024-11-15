@@ -10,6 +10,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/mitoteam/mttools"
 )
 
 type JobArchiveFile struct {
@@ -20,6 +22,7 @@ type JobArchiveFile struct {
 	ModTime time.Time //modification time
 	Time    time.Time //timestamp from archive name
 	Age     int       //age in days
+	Hash    string    //sha256 for archives
 }
 
 type JobArchiveFullItem struct {
@@ -34,8 +37,8 @@ type JobArchiveDiffItem struct {
 }
 
 type JobArchive struct {
-	FilesList    []JobArchiveFile
-	FullItemList []JobArchiveFullItem
+	FilesList    []JobArchiveFile     // All archives raw list
+	FullItemList []JobArchiveFullItem // Full archives list with diffs listed in DiffItemList
 }
 
 func (job *Job) ScanArchive() {
@@ -100,6 +103,18 @@ func (job *Job) ScanArchive() {
 
 		archive_file.Age = int(math.Ceil(time.Since(archive_file.Time).Hours() / 24))
 
+		//calculate hash for diffs
+		if !job.Settings.KeepSameDiff && !archive_file.IsFull {
+			var hash string
+			hash, err = mttools.FileSha256(archive_file.Path)
+
+			if err == nil {
+				archive_file.Hash = hash
+			} else {
+				log.Fatal(err)
+			}
+		}
+
 		job.Archive.FilesList = append(job.Archive.FilesList, archive_file)
 	}
 
@@ -157,6 +172,18 @@ func (job *Job) ScanArchive() {
 	}
 }
 
+func (ja *JobArchive) LastFile() *JobArchiveFile {
+	if ja.FilesList == nil {
+		return nil
+	}
+
+	if len(ja.FilesList) == 0 {
+		return nil
+	}
+
+	return &ja.FilesList[len(ja.FilesList)-1]
+}
+
 func (ja *JobArchive) Dump(die bool) {
 	fmt.Println("------ RAW LIST ------- ")
 	for _, raw_file := range ja.FilesList {
@@ -167,10 +194,13 @@ func (ja *JobArchive) Dump(die bool) {
 	for index := range ja.FullItemList {
 		full_item := &ja.FullItemList[index]
 
-		fmt.Printf("FULL: %s, size: %d, age: %d, diff_size: %d%%\n", full_item.File.Name, full_item.File.Size, full_item.File.Age, full_item.TotalDiffSizePercent)
+		fmt.Printf("FULL: %s, size: %s, age: %d, diff_size: %d%%\n", full_item.File.Name, mttools.FormatFileSize(full_item.File.Size), full_item.File.Age, full_item.TotalDiffSizePercent)
 
 		for _, diff_item := range full_item.DiffItemList {
-			fmt.Printf("    DIFF: %s, size %d %d%%\n", diff_item.File.Name, diff_item.File.Size, diff_item.DiffSizePercent)
+			fmt.Printf("    DIFF: %s, size %s or %d%%\n", diff_item.File.Name, mttools.FormatFileSize(diff_item.File.Size), diff_item.DiffSizePercent)
+			if len(diff_item.File.Hash) > 0 {
+				fmt.Println("    " + diff_item.File.Hash)
+			}
 		}
 	}
 
