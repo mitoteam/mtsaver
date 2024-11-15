@@ -151,57 +151,14 @@ func (job *Job) LoadSettings() {
 	var s = &job.Settings
 
 	// set defaults if something is missing in file
-
-	if s.DateFormat == "" {
-		s.DateFormat = "2006-01-02_15-04-05"
-	}
-
-	name := filepath.Base(job.Path)
-
-	if len(s.ArchiveName) == 0 {
-		s.ArchiveName = name
-	}
-
-	if len(s.ArchivesPath) == 0 {
-		s.ArchivesPath = filepath.Join(filepath.Dir(job.Path), name+"_ARCHIVE")
-	}
-
-	if len(s.FullSuffix) == 0 {
-		s.FullSuffix = "FULL"
-	}
-
-	if len(s.DiffSuffix) == 0 {
-		s.DiffSuffix = "DIFF"
-	}
-
-	if s.CompressionLevel == -1 {
-		s.CompressionLevel = 5
-	}
-
-	// Do settings checks
-	if s.FullSuffix == s.DiffSuffix {
-		log.Fatalln("Full suffix should differ from diff suffix")
-	}
-
-	if s.Cleanup == "" {
-		s.Cleanup = "after"
-	} else if s.Cleanup != "before" && s.Cleanup != "after" {
-		log.Fatalln("Valid  values for 'cleanup' option are 'before', 'after'")
-	}
-
-	if s.MaxFullCount < 1 {
-		log.Fatalln("Minimum value for max_full_count is 1")
-	}
-
-	if s.MaxDiffCount < 0 {
-		log.Fatalln("Minimum value for max_diff_count is 0")
-	}
+	s.ApplyDefaultsAndCheck(job.Path)
 }
 
 func (job *Job) createArchive(is_full bool, full_archive_path string) {
 	var common_arguments = []string{} //7-zip command (add or update), basic compression settings
 	job_archive_filename := job.getArchiveName(is_full)
 	var err error
+	js := &job.Settings //convenience variable
 
 	if is_full {
 		common_arguments = append(common_arguments, "a", job_archive_filename)
@@ -225,30 +182,22 @@ func (job *Job) createArchive(is_full bool, full_archive_path string) {
 	)
 
 	//turn on solid mode for archives
-	if JobRuntimeOptions.Solid || job.Settings.Solid {
+	if js.Solid {
 		common_arguments = append(common_arguments, "-ms=on")
 	}
 
 	//set password for archive
-	password := ""
+	if len(js.Password) > 0 {
+		common_arguments = append(common_arguments, "-p"+js.Password)
 
-	if len(JobRuntimeOptions.Password) > 0 {
-		password = JobRuntimeOptions.Password
-	} else if len(job.Settings.Password) > 0 {
-		password = job.Settings.Password
-	}
-
-	if len(password) > 0 {
-		common_arguments = append(common_arguments, "-p"+password)
-
-		if JobRuntimeOptions.EncryptFilenames || job.Settings.EncryptFilenames {
+		if js.EncryptFilenames {
 			//mhe = encrypt headers
 			common_arguments = append(common_arguments, "-mhe")
 		}
 	}
 
 	//exclusions
-	for _, pattern := range job.Settings.Exclude {
+	for _, pattern := range js.Exclude {
 		common_arguments = append(common_arguments, "-xr!"+pattern)
 	}
 
@@ -257,12 +206,12 @@ func (job *Job) createArchive(is_full bool, full_archive_path string) {
 	copy(basic_arguments, common_arguments)
 
 	basic_arguments = append(basic_arguments,
-		"-mx"+strconv.Itoa(job.Settings.CompressionLevel), //compression level
+		"-mx"+strconv.Itoa(js.CompressionLevel), //compression level
 	)
 
 	if is_full {
 		// exclude skip_compression patterns
-		for _, pattern := range job.Settings.SkipCompression {
+		for _, pattern := range js.SkipCompression {
 			basic_arguments = append(basic_arguments, "-xr!"+pattern)
 		}
 	}
@@ -274,7 +223,7 @@ func (job *Job) createArchive(is_full bool, full_archive_path string) {
 	main_output := runSevenZip(basic_arguments)
 
 	//// ADD ITEMS WITHOUT COMPRESSION - works only for full archives now
-	if is_full && len(job.Settings.SkipCompression) > 0 {
+	if is_full && len(js.SkipCompression) > 0 {
 		var skip_compression_arguments = make([]string, len(common_arguments))
 		copy(skip_compression_arguments, common_arguments)
 
@@ -283,7 +232,7 @@ func (job *Job) createArchive(is_full bool, full_archive_path string) {
 		)
 
 		// exclude skip_compression patterns
-		for _, pattern := range job.Settings.SkipCompression {
+		for _, pattern := range js.SkipCompression {
 			skip_compression_arguments = append(skip_compression_arguments, filepath.Join(job.Path, pattern))
 		}
 
@@ -295,7 +244,7 @@ func (job *Job) createArchive(is_full bool, full_archive_path string) {
 		is_empty := strings.Contains(main_output, "Add new data to archive: 0 files, 0 bytes")
 
 		if is_empty {
-			if !job.Settings.KeepEmptyDiff {
+			if !js.KeepEmptyDiff {
 				fmt.Printf("Empty diff archive created (%s). Removing it.", filepath.Base(job_archive_filename))
 
 				if err = os.Remove(job_archive_filename); err != nil {
@@ -303,7 +252,7 @@ func (job *Job) createArchive(is_full bool, full_archive_path string) {
 				}
 			}
 		} else {
-			if !job.Settings.KeepSameDiff {
+			if !js.KeepSameDiff {
 				if prev_archive := job.Archive.LastFile(); prev_archive != nil {
 					if !prev_archive.IsFull {
 						//log.Printf("Prev hash: %s", prev_archive.Hash)
@@ -320,7 +269,6 @@ func (job *Job) createArchive(is_full bool, full_archive_path string) {
 								if err = os.Remove(job_archive_filename); err != nil {
 									log.Fatalf("Error deleting file %s: %s", filepath.Base(job_archive_filename), err)
 								}
-
 							}
 						}
 					}

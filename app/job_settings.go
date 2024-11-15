@@ -1,6 +1,9 @@
 package app
 
 import (
+	"log"
+	"path/filepath"
+
 	"github.com/mitoteam/mttools"
 )
 
@@ -68,4 +71,68 @@ func (js *JobSettings) SaveToFile(path string, comment string) error {
 
 func (js *JobSettings) Print() {
 	mttools.PrintYamlSettings(js)
+}
+
+func (js *JobSettings) ApplyDefaultsAndCheck(job_path string) {
+	//// Set defaults for missing values
+	if js.DateFormat == "" {
+		js.DateFormat = "2006-01-02_15-04-05"
+	}
+
+	name := filepath.Base(job_path)
+
+	if len(js.ArchiveName) == 0 {
+		js.ArchiveName = name
+	}
+
+	if len(js.ArchivesPath) == 0 {
+		js.ArchivesPath = filepath.Join(filepath.Dir(job_path), name+"_ARCHIVE")
+	}
+
+	if len(js.FullSuffix) == 0 {
+		js.FullSuffix = "FULL"
+	}
+
+	if len(js.DiffSuffix) == 0 {
+		js.DiffSuffix = "DIFF"
+	}
+
+	if js.CompressionLevel == -1 {
+		js.CompressionLevel = 5
+	}
+
+	//// Override values from runtime options
+	//turn on solid mode for archives
+	if JobRuntimeOptions.Solid {
+		js.Solid = true
+	}
+
+	//password
+	if len(JobRuntimeOptions.Password) > 0 {
+		js.Password = JobRuntimeOptions.Password
+	}
+
+	//encrypt filenames
+	if JobRuntimeOptions.EncryptFilenames {
+		js.EncryptFilenames = true
+	}
+
+	//// Do settings checks
+	if js.FullSuffix == js.DiffSuffix {
+		log.Fatalln("Full suffix should differ from diff suffix")
+	}
+
+	if js.Cleanup == "" {
+		js.Cleanup = "after"
+	} else if js.Cleanup != "before" && js.Cleanup != "after" {
+		log.Fatalln("Valid  values for 'cleanup' option are 'before', 'after'")
+	}
+
+	if js.MaxFullCount < 1 {
+		log.Fatalln("Minimum value for max_full_count is 1")
+	}
+
+	if js.MaxDiffCount < 0 {
+		log.Fatalln("Minimum value for max_diff_count is 0")
+	}
 }
