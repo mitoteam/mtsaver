@@ -199,15 +199,12 @@ func (job *Job) LoadSettings() {
 }
 
 func (job *Job) createArchive(is_full bool, full_archive_path string) {
-	var common_arguments = []string{} //command
+	var common_arguments = []string{} //7-zip command (add or update), basic compression settings
 	job_archive_filename := job.getArchiveName(is_full)
 	var err error
 
 	if is_full {
-		common_arguments = append(common_arguments,
-			"a",
-			job_archive_filename,
-		)
+		common_arguments = append(common_arguments, "a", job_archive_filename)
 	} else {
 		// thanks: https://nagimov.me/post/simple-differential-and-incremental-backups-using-7-zip/
 
@@ -229,9 +226,25 @@ func (job *Job) createArchive(is_full bool, full_archive_path string) {
 
 	//turn on solid mode for archives
 	if JobRuntimeOptions.Solid || job.Settings.Solid {
-		common_arguments = append(common_arguments,
-			"-ms=on",
-		)
+		common_arguments = append(common_arguments, "-ms=on")
+	}
+
+	//set password for archive
+	password := ""
+
+	if len(JobRuntimeOptions.Password) > 0 {
+		password = JobRuntimeOptions.Password
+	} else if len(job.Settings.Password) > 0 {
+		password = job.Settings.Password
+	}
+
+	if len(password) > 0 {
+		common_arguments = append(common_arguments, "-p"+password)
+
+		if JobRuntimeOptions.EncryptFilenames || job.Settings.EncryptFilenames {
+			//mhe = encrypt headers
+			common_arguments = append(common_arguments, "-mhe")
+		}
 	}
 
 	//exclusions
@@ -239,7 +252,7 @@ func (job *Job) createArchive(is_full bool, full_archive_path string) {
 		common_arguments = append(common_arguments, "-xr!"+pattern)
 	}
 
-	// RUN BASIC COMPRESSION
+	//// RUN BASIC COMPRESSION
 	var basic_arguments = make([]string, len(common_arguments))
 	copy(basic_arguments, common_arguments)
 

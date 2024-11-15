@@ -67,5 +67,15 @@ func init() {
 		"Create solid archives.",
 	)
 
+	cmd.Flags().StringVar(
+		&app.JobRuntimeOptions.Password, "password", "",
+		"Set .7z archive password (or override 'password' in settings).",
+	)
+
+	cmd.Flags().BoolVar(
+		&app.JobRuntimeOptions.EncryptFilenames, "encrypt-filenames", false,
+		"Encrypt filenames in archive (used only when password is set).",
+	)
+
 	rootCmd.AddCommand(cmd)
 }
