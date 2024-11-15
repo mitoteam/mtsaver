@@ -3,7 +3,9 @@ package cmd
 import (
 	"fmt"
 	"mtsaver/app"
+	"path/filepath"
 
+	"github.com/mitoteam/mttools"
 	"github.com/spf13/cobra"
 )
 
@@ -13,7 +15,7 @@ func init() {
 		Short: "Print information about system, environment etc. If path is given settings for that folder are printed as well.",
 
 		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Println(" --- " + app.Global.AppName + " --- ")
+			fmt.Println(" --- " + app.Global.AppName + " info --- ")
 			fmt.Println("Version: " + app.Global.Version)
 			fmt.Println("Commit: " + app.Global.Commit)
 			fmt.Println("Built with: " + app.Global.BuiltWith)
@@ -27,10 +29,18 @@ func init() {
 					return err
 				}
 
-				fmt.Println(" --- Directory ---")
-				fmt.Println(" --- Path:", job.Path)
-				fmt.Println(" --- Settings file:", job.SettingsFilename())
-				job.Settings.Print()
+				settings_filename := job.SettingsFilename()
+
+				fmt.Println(" --- Directory Info ---")
+				fmt.Println("Path:", job.Path)
+
+				if mttools.IsFileExists(settings_filename) {
+					fmt.Println("Settings file:", settings_filename)
+					fmt.Println("\n --- Directory Settings ---")
+					job.Settings.Print()
+				} else {
+					fmt.Printf("no settings file found (%s)\n", filepath.Base(settings_filename))
+				}
 
 				fmt.Println()
 			}

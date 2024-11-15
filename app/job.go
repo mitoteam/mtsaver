@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -284,10 +283,10 @@ func (job *Job) createArchive(is_full bool, full_archive_path string) {
 
 		if is_empty {
 			if !job.Settings.KeepEmptyDiff {
-				fmt.Printf("Empty diff archive created (%s). Removing it.", path.Base(job_archive_filename))
+				fmt.Printf("Empty diff archive created (%s). Removing it.", filepath.Base(job_archive_filename))
 
 				if err = os.Remove(job_archive_filename); err != nil {
-					log.Fatalf("Error deleting file %s: %s", path.Base(job_archive_filename), err)
+					log.Fatalf("Error deleting file %s: %s", filepath.Base(job_archive_filename), err)
 				}
 			}
 		} else {
@@ -303,10 +302,10 @@ func (job *Job) createArchive(is_full bool, full_archive_path string) {
 							//log.Printf("Last hash: %s", last_hash)
 
 							if len(last_hash) > 0 && last_hash == prev_archive.Hash {
-								fmt.Printf("Diff archive with same sha256 created (%s). Removing it.", path.Base(job_archive_filename))
+								fmt.Printf("Diff archive with same sha256 created (%s). Removing it.", filepath.Base(job_archive_filename))
 
 								if err = os.Remove(job_archive_filename); err != nil {
-									log.Fatalf("Error deleting file %s: %s", path.Base(job_archive_filename), err)
+									log.Fatalf("Error deleting file %s: %s", filepath.Base(job_archive_filename), err)
 								}
 
 							}
