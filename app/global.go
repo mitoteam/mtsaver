@@ -9,6 +9,7 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/mitoteam/mttools"
 	"github.com/spf13/cobra"
 )
 
@@ -32,6 +33,10 @@ func init() {
 }
 
 func SetupBeforeCommand(cmd *cobra.Command, args []string) error {
+	if JobRuntimeOptions.NoConsole {
+		mttools.HideConsole()
+	}
+
 	if Global.SevenZipCmd == "auto" {
 		Global.SevenZipCmd = "" //reset to force autodetection
 	}

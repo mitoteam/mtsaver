@@ -42,6 +42,11 @@ func init() {
 		app.DefaultSettingsFilename,
 		"Filename or path to directory settings file. Used by 'run', 'info', 'init' commands. If filename only given it is looked for in directory itself.",
 	)
+
+	rootCmd.PersistentFlags().BoolVar(
+		&app.JobRuntimeOptions.NoConsole, "no-console", false,
+		"Windows only: hides console window right after app start.",
+	)
 }
 
 func Root() *cobra.Command {
