@@ -4,6 +4,7 @@ package app
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"os"
 	"os/exec"
 	"runtime"
@@ -34,7 +35,11 @@ func init() {
 
 func SetupBeforeCommand(cmd *cobra.Command, args []string) error {
 	if JobRuntimeOptions.NoConsole {
-		mttools.HideConsole()
+		if mttools.IsWindows() {
+			mttools.HideConsole()
+		} else {
+			fmt.Println("--no-console option ignored under Linux")
+		}
 	}
 
 	if Global.SevenZipCmd == "auto" {
