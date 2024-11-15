@@ -185,19 +185,25 @@ func (ja *JobArchive) LastFile() *JobArchiveFile {
 }
 
 func (ja *JobArchive) Dump(die bool) {
-	fmt.Println("------ RAW LIST ------- ")
+	fmt.Println("------ PLAIN ARCHIVES LIST -------")
 	for _, raw_file := range ja.FilesList {
-		fmt.Println("RAW: "+raw_file.Name, raw_file.Size)
+		fmt.Println(raw_file.Name, mttools.FormatFileSize(raw_file.Size))
 	}
 
-	fmt.Println("------------- ")
+	fmt.Println("\n------ DIFFs TREE -------")
 	for index := range ja.FullItemList {
 		full_item := &ja.FullItemList[index]
 
-		fmt.Printf("FULL: %s, size: %s, age: %d, diff_size: %d%%\n", full_item.File.Name, mttools.FormatFileSize(full_item.File.Size), full_item.File.Age, full_item.TotalDiffSizePercent)
+		info_str := fmt.Sprintf("size: %s, age: %d", mttools.FormatFileSize(full_item.File.Size), full_item.File.Age)
+
+		if len(full_item.DiffItemList) > 0 {
+			info_str += fmt.Sprintf(", diffs: %d (size %d%%)", len(full_item.DiffItemList), full_item.TotalDiffSizePercent)
+		}
+
+		fmt.Printf("FULL: %s, %s\n", full_item.File.Name, info_str)
 
 		for _, diff_item := range full_item.DiffItemList {
-			fmt.Printf("    DIFF: %s, size %s or %d%%\n", diff_item.File.Name, mttools.FormatFileSize(diff_item.File.Size), diff_item.DiffSizePercent)
+			fmt.Printf("    DIFF: %s, size %s = %d%%, age: %d\n", diff_item.File.Name, mttools.FormatFileSize(diff_item.File.Size), diff_item.DiffSizePercent, diff_item.File.Age)
 			if len(diff_item.File.Hash) > 0 {
 				fmt.Println("    " + diff_item.File.Hash)
 			}

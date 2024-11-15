@@ -106,6 +106,15 @@ func (job *Job) Run() error {
 	return nil
 }
 
+func (job *Job) Dump() {
+	if !mttools.IsDirExists(job.Settings.ArchivesPath) {
+		fmt.Printf("%s directory does not exists", job.Settings.ArchivesPath)
+	}
+
+	job.ScanArchive()
+	job.Archive.Dump(false)
+}
+
 func (job *Job) getArchiveName(is_full bool) string {
 	var suffix string
 
