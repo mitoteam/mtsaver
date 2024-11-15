@@ -6,8 +6,10 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/mitoteam/mttools"
@@ -133,6 +135,7 @@ func (job *Job) LoadSettings() {
 		CompressionLevel: -1,
 		MaxFullCount:     5,
 		MaxDiffCount:     20,
+		KeepEmptyDiff:    false,
 	}
 
 	if mttools.IsFileExists(job.SettingsFilename()) {
@@ -193,11 +196,12 @@ func (job *Job) LoadSettings() {
 
 func (job *Job) createArchive(is_full bool, full_archive_path string) {
 	var common_arguments = []string{} //command
+	job_archive_filename := job.getArchiveName(is_full)
 
 	if is_full {
 		common_arguments = append(common_arguments,
 			"a",
-			job.getArchiveName(true), //new full archive name
+			job_archive_filename,
 		)
 	} else {
 		// thanks: https://nagimov.me/post/simple-differential-and-incremental-backups-using-7-zip/
@@ -206,7 +210,7 @@ func (job *Job) createArchive(is_full bool, full_archive_path string) {
 			"u",
 			full_archive_path, //existing full archive
 			"-u-",             // disable updates in the base archive
-			"-up3q3r2x2y2z0w2!"+job.getArchiveName(false), //new diff archive name
+			"-up3q3r2x2y2z0w2!"+job_archive_filename,
 		)
 	}
 
@@ -249,7 +253,7 @@ func (job *Job) createArchive(is_full bool, full_archive_path string) {
 	basic_arguments = append(basic_arguments, filepath.Join(job.Path, "*"))
 
 	// run command
-	runSevenZip(basic_arguments)
+	main_output := runSevenZip(basic_arguments)
 
 	//// ADD ITEMS WITHOUT COMPRESSION - works only for full archives now
 	if is_full && len(job.Settings.SkipCompression) > 0 {
@@ -267,24 +271,38 @@ func (job *Job) createArchive(is_full bool, full_archive_path string) {
 
 		runSevenZip(skip_compression_arguments)
 	}
+
+	//check if empty diff was created
+	if !is_full && !job.Settings.KeepEmptyDiff && strings.Contains(main_output, "Add new data to archive: 0 files, 0 bytes") {
+		fmt.Printf("Empty diff archive created (%s). Removing.", path.Base(job_archive_filename))
+
+		if err := os.Remove(job_archive_filename); err != nil {
+			log.Fatalf("Error deleting file %s: %s", path.Base(job_archive_filename), err)
+		}
+	}
 }
 
-func runSevenZip(arguments []string) {
+func runSevenZip(arguments []string) string {
 	cmd := exec.Command(Global.SevenZipCmd, arguments...)
-	//fmt.Println("CMD: " + cmd.String())
+	//fmt.Println("7z CMD: " + cmd.String())
 
 	pipe, _ := cmd.StdoutPipe()
 
 	cmd.Start()
 
+	output := ""
+
 	scanner := bufio.NewScanner(pipe)
 
 	for scanner.Scan() {
 		text := scanner.Text()
+		output = output + text
 		fmt.Println(text)
 	}
 
 	cmd.Wait()
+
+	return output
 }
 
 func (job *Job) Cleanup() error {
