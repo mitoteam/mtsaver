@@ -8,7 +8,8 @@ var JobRuntimeOptions struct {
 	Password         string // run --password <string>
 	EncryptFilenames bool   // run --encrypt-filenames
 	SettingsFilename string
-	DefaultsFrom     string
+	DefaultsFrom     string // init --defaults-from <string>
+	Print            bool   // init --print
 }
 
 func init() {

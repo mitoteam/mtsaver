@@ -29,7 +29,7 @@ func init() {
 
 			filename := job.SettingsFilename()
 
-			if mttools.IsFileExists(filename) {
+			if !app.JobRuntimeOptions.Print && mttools.IsFileExists(filename) {
 				return errors.New("can not initialize existing file: " + filename)
 			}
 
@@ -39,11 +39,15 @@ options listed here with its default values. Recommendation is to edit options y
 want to change and remove all others to keep this as simple as possible.
 `
 
-			if err := job.Settings.SaveToFile(filename, comment); err != nil {
-				return err
-			}
+			if app.JobRuntimeOptions.Print {
+				job.Settings.Print()
+			} else {
+				if err := job.Settings.SaveToFile(filename, comment); err != nil {
+					return err
+				}
 
-			fmt.Println("Default settings written to " + filename)
+				fmt.Println("Default settings written to " + filename)
+			}
 
 			return nil
 		},
@@ -52,6 +56,11 @@ want to change and remove all others to keep this as simple as possible.
 	cmd.Flags().StringVar(
 		&app.JobRuntimeOptions.DefaultsFrom, "defaults-from", "",
 		"settings file used to read defaults from before generating new setting with full options set",
+	)
+
+	cmd.Flags().BoolVar(
+		&app.JobRuntimeOptions.Print, "print", false,
+		"print default settings instead writing to file",
 	)
 
 	rootCmd.AddCommand(cmd)
