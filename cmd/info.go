@@ -23,27 +23,25 @@ func init() {
 			fmt.Println("7-zip info: " + app.Global.SevenZipInfo)
 			fmt.Println()
 
-			if len(args) > 0 {
-				job, err := app.NewJobFromArgs(args)
-				if err != nil {
-					return err
-				}
-
-				settings_filename := job.SettingsFilename()
-
-				fmt.Println(" --- Directory Info ---")
-				fmt.Println("Path:", job.Path)
-
-				if mttools.IsFileExists(settings_filename) {
-					fmt.Println("Settings file:", settings_filename)
-					fmt.Println("\n --- Directory Settings ---")
-					job.Settings.Print()
-				} else {
-					fmt.Printf("no settings file found (%s)\n", filepath.Base(settings_filename))
-				}
-
-				fmt.Println()
+			job, err := app.NewJobFromArgs(args)
+			if err != nil {
+				return err
 			}
+
+			settings_filename := job.SettingsFilename()
+
+			fmt.Println(" --- Directory Info ---")
+			fmt.Println("Path:", job.Path)
+
+			if mttools.IsFileExists(settings_filename) {
+				fmt.Println("Settings file:", settings_filename)
+				fmt.Println("\n --- Directory Settings ---")
+				job.Settings.Print()
+			} else {
+				fmt.Printf("no settings file found (%s)\n", filepath.Base(settings_filename))
+			}
+
+			fmt.Println()
 
 			return nil
 		},
