@@ -1,11 +1,9 @@
 package app
 
 import (
-	"bufio"
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -279,24 +277,7 @@ func (job *Job) createArchive(is_full bool, full_archive_path string) {
 }
 
 func runSevenZip(arguments []string) string {
-	cmd := exec.Command(Global.SevenZipCmd, arguments...)
-	//fmt.Println("7z CMD: " + cmd.String())
-
-	pipe, _ := cmd.StdoutPipe()
-
-	cmd.Start()
-
-	output := ""
-
-	scanner := bufio.NewScanner(pipe)
-
-	for scanner.Scan() {
-		text := scanner.Text()
-		output = output + text
-		fmt.Println(text)
-	}
-
-	cmd.Wait()
+	output, _ := mttools.ExecCmdWaitAndPrint(Global.SevenZipCmd, arguments)
 
 	return output
 }
