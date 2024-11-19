@@ -33,3 +33,6 @@ max_diff_count: 2
 max_diff_size_percent: 50
 # total size of differential archives since latest full archive in percents to force new full archive next run, 0 = not set
 max_total_diff_size_percent: 80
+
+run_before:
+  - "ls"

@@ -56,6 +56,19 @@ func (job *Job) Run() error {
 	job.ScanArchive()
 	//job.Archive.Dump(false)
 
+	//run commands before creating new archive
+	if len(job.Settings.RunBefore) > 0 {
+		log.Println("Executing commands from 'run_before' option")
+
+		for _, command := range job.Settings.RunBefore {
+			log.Println("Command: " + command)
+
+			if err := mttools.ExecCmdPrint(command, nil); err != nil {
+				log.Println("Error: " + err.Error())
+			}
+		}
+	}
+
 	if JobRuntimeOptions.ForceFull {
 		job.createArchive(true, "")
 	} else if JobRuntimeOptions.ForceDiff {

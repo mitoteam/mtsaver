@@ -48,6 +48,9 @@ type JobSettings struct {
 
 	//Maximum total diffs size IN PERCENTS to force full backup
 	MaxTotalDiffSizePercent int `yaml:"max_total_diff_size_percent" yaml_comment:"Total size of differential archives since latest full archive in percents to force new full archive next run, 0 = not set"`
+
+	//Commands to run
+	RunBefore []string `yaml:"run_before" yaml_comment:"List of commands to run before creating archive"`
 }
 
 // creates new settings with default values
