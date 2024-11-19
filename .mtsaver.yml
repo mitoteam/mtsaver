@@ -1,6 +1,6 @@
 # This file is just a test example. Please see documentation for better options explanation.
-# Created on: 2022-11-09T14:37:51+03:00
-#
+
+archives_path: "M:/mtsaver_test_ARCHIVE"
 
 # suffix for full archives
 full_suffix: FULL

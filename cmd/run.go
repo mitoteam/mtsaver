@@ -44,6 +44,11 @@ func init() {
 				return err
 			}
 
+			//do not run if directory has no .mtsaver.yaml and no --settings option specified
+			if !job.Settings.LoadedFromFile {
+				return fmt.Errorf("Directory %s does not contain %s file", job.Path, app.DefaultSettingsFilename)
+			}
+
 			if err = job.Run(); err != nil {
 				return err
 			}

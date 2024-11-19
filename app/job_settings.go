@@ -11,6 +11,8 @@ const DefaultSettingsFilename = ".mtsaver.yml"
 
 // Setting for archived folder
 type JobSettings struct {
+	LoadedFromFile bool `yaml:"-"` //ignored in yaml
+
 	ArchivesPath string `yaml:"archives_path" yaml_comment:"Full path to directory to create archives in"`
 	ArchiveName  string `yaml:"archive_name" yaml_comment:"Base archive name (appended with timestamp, suffix and .7z extension)"`
 	FullSuffix   string `yaml:"full_suffix" yaml_comment:"Suffix for full archives"`
@@ -56,6 +58,7 @@ type JobSettings struct {
 // creates new settings with default values
 func NewJobSettings() JobSettings {
 	return JobSettings{
+		LoadedFromFile:   false,
 		CompressionLevel: -1,
 		MaxFullCount:     5,
 		MaxDiffCount:     20,
@@ -65,7 +68,13 @@ func NewJobSettings() JobSettings {
 }
 
 func (js *JobSettings) LoadFromFile(path string) error {
-	return mttools.LoadYamlSettingFromFile(path, js)
+	if err := mttools.LoadYamlSettingFromFile(path, js); err != nil {
+		return err
+	}
+
+	js.LoadedFromFile = true
+
+	return nil
 }
 
 func (js *JobSettings) SaveToFile(path string, comment string) error {
