@@ -1,7 +1,10 @@
 ---
-lsi: true
-safe: true
-incremental: false
 title: mtsaver docs
 description: simple differential backups management command-line utility (7zip based)
+
+safe: true
+incremental: false
+
+show_downloads: false
+theme: jekyll-theme-slate
 ...
