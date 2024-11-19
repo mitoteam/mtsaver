@@ -63,7 +63,7 @@ func (job *Job) Run() error {
 		for _, command := range job.Settings.RunBefore {
 			log.Println("Command: " + command)
 
-			if err := mttools.ExecCmdPrint(command, nil); err != nil {
+			if err := mttools.ExecCommandLine(command, true); err != nil {
 				log.Println("Error: " + err.Error())
 			}
 		}
