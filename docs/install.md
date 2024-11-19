@@ -1,6 +1,4 @@
----
-title: mtsaver installation
----
+# mtsaver installation
 
 ## Using Scoop (Windows)
 

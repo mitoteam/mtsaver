@@ -10,7 +10,7 @@
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/y/mitoteam/mtsaver)](https://github.com/mitoteam/mtsaver/commits)
 [![GitHub downloads](https://img.shields.io/github/downloads/mitoteam/mtsaver/total)](https://github.com/mitoteam/mtsaver/releases)
 
-Simple directory differential backup command line solution. Based on 7-Zip archiver available for all major platforms.
+Simple directory differential backup command-line utility. Based on 7-Zip archiver available for all major platforms.
 
 Trying to be self-explanatory (`mtsaver help`). More docs and manuals are being added.
 

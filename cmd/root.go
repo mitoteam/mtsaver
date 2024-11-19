@@ -13,7 +13,7 @@ var rootCmd = &cobra.Command{
 	Version: app.Global.Version,
 	Long: app.Global.AppName + ` - differential backup archives retention tool.
 
-Based on using 7-Zip archiver https://www.7-zip.org
+Based on 7-Zip archiver https://www.7-zip.org
 
 Copyright: MiTo Team, https://mito-team.com`,
 
