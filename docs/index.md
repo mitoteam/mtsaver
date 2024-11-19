@@ -1,7 +1,7 @@
 ---
-title: mtsaver Documentation
+title: mtsaver docs
 ---
 
-Github pages index stub
+Test content
 
-* some content
+* [Installation](install.md)
