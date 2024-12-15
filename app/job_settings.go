@@ -62,6 +62,7 @@ func NewJobSettings() JobSettings {
 		CompressionLevel: -1,
 		MaxFullCount:     5,
 		MaxDiffCount:     20,
+		SkipCompression:  []string{"*.7z", "*.rar"},
 		KeepEmptyDiff:    false,
 		KeepSameDiff:     false,
 	}
