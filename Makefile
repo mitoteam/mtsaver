@@ -11,7 +11,7 @@ endif
 MODULE_NAME := $(shell go list)
 APP_VERSION := $(file < VERSION)
 APP_COMMIT := $(shell git rev-list -1 HEAD)
-LD_FLAGS := "-X '${MODULE_NAME}/app.BuildVersion=${APP_VERSION}' -X '${MODULE_NAME}/app.BuildCommit=${APP_COMMIT}' -X '${MODULE_NAME}/app.BuildTime=${BUILD_TIME}'"
+LD_FLAGS := "-w -s -X '${MODULE_NAME}/app.BuildVersion=${APP_VERSION}' -X '${MODULE_NAME}/app.BuildCommit=${APP_COMMIT}' -X '${MODULE_NAME}/app.BuildTime=${BUILD_TIME}'"
 
 fn_GO_BUILD = GOOS=$(1) GOARCH=$(2) go build -o ${DIST_DIR}/$(3) -ldflags=${LD_FLAGS} main.go ;\
 7z a ${DIST_DIR}/${APP_NAME}-${APP_VERSION}-$(4).7z -mx9 ./${DIST_DIR}/$(3)
