@@ -44,12 +44,12 @@ type JobSettings struct {
 	//Maximum latest diff size IN PERCENTS to force full backup
 	MaxDiffSizePercent int `yaml:"max_diff_size_percent" yaml_comment:"Last differential archive size in percents to force new full archive at next run, 0 = not set"`
 
+	//Maximum total diffs size IN PERCENTS to force full backup
+	MaxTotalDiffSizePercent int `yaml:"max_total_diff_size_percent" yaml_comment:"Total size of differential archives since latest full archive in percents to force new full archive next run, 0 = not set"`
+
 	KeepEmptyDiff bool `yaml:"keep_empty_diff" yaml_comment:"false = delete diff archives if no files where added to it (empty archive), true = keep anyway"`
 
 	KeepSameDiff bool `yaml:"keep_same_diff" yaml_comment:"false = delete diff archives if it has same sha256 hash as previous one (nothing new added), true = keep anyway"`
-
-	//Maximum total diffs size IN PERCENTS to force full backup
-	MaxTotalDiffSizePercent int `yaml:"max_total_diff_size_percent" yaml_comment:"Total size of differential archives since latest full archive in percents to force new full archive next run, 0 = not set"`
 
 	//Commands to run
 	RunBefore []string `yaml:"run_before" yaml_comment:"List of commands to run before creating archive"`
@@ -58,13 +58,14 @@ type JobSettings struct {
 // creates new settings with default values
 func NewJobSettings() JobSettings {
 	return JobSettings{
-		LoadedFromFile:   false,
-		CompressionLevel: -1,
-		MaxFullCount:     5,
-		MaxDiffCount:     20,
-		SkipCompression:  []string{"*.7z", "*.rar"},
-		KeepEmptyDiff:    false,
-		KeepSameDiff:     false,
+		LoadedFromFile:     false,
+		CompressionLevel:   -1,
+		MaxFullCount:       5,
+		MaxDiffCount:       20,
+		SkipCompression:    []string{"*.7z", "*.rar"},
+		MaxDiffSizePercent: 120,
+		KeepEmptyDiff:      false,
+		KeepSameDiff:       false,
 	}
 }
 
