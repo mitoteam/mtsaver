@@ -96,14 +96,14 @@ Details: [scoop-bucket](https://github.com/mitoteam/scoop-bucket).
 
 ## Usage
 
-First you need to create a file with archiving settings: what to pack, where to pack, retention rules and so on. By default this file has `.mtsaver.yml` name.
-
-Create default settings set to start with by running `mtsaver init` command in directory you want to backup. This will create `.mtsaver.yml` file with all possible settings and explanation.
+First you need to create a file with archiving settings: what to pack, where to pack, retention rules and so on. Just run `mtsaver init` in directory you want to backup. By default this file has `.mtsaver.yml` name. This will create `.mtsaver.yml` file with all possible settings and explanation.
 
 Open created `.mtsaver.yml` file and edit settings you need. You can remove untouched default settings from this file to keep things simple. Important settings are:
 
 * **archives_path** path to store created archives.
 * **keep_at_least** number of days to keep oldest full archive despite all other retention settings.
+
+Default retention rules are: keep max 5 full archives, keep max 20 diff archives for each full archive, force full archive if previous diff size is 120% or more of latest full archive, do not store empty or unchanged diff archives, add _*.7z_ and _*.rar_ files to archives without compression (assuming they are already packed).
 
 Run `mtsaver run` command in directory with `.mtsaver.yml` file to create new backup archive. First time it will be created as full archive. Next runs depending on conditions and settings either full or diff archives will be created and old ones will be removed.
 
