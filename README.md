@@ -12,7 +12,13 @@
 
 Simple directory differential backups command-line utility. Based on 7-Zip archiver available for all major platforms.
 
-Made to be simple yet powerful:
+**Basics of differential backups idea**:
+1) Create full directory archive for first time backup is performed.
+2) Create archive with only changed, added (or removed!) files every next time...
+3) ...until certain criteria met (like "_total diff archives size exceeds full archive size_" or "_diff archive is more than 20% of full archive size_". Create new full archive at this point (so diffs will be small again).
+4) Remove outdated full and diff archives (according to retention settings).
+
+**Made to be simple yet powerful**:
 * No dependencies. Only 7-Zip is required! So no need for special software to explore or unpack created backups.
 * No database required: archiving and retention settings are in `.mtsaver.yml` file, other state info gathered on the fly from archives directory.
 * No installation required. Designed to be used as-is. Distributed as single executable file.
@@ -22,7 +28,7 @@ Made to be simple yet powerful:
 
 Trying to be self-explanatory (`mtsaver help`). More docs and manuals are being added.
 
-## Basic idea
+## Differential backup idea explained
 
 Lets assume we have huge enough working directory (~12 Gb) we want to backup periodically (for example _daily_). And we want to have history of its changes (for example to be able to restore some file deleted forty two backups ago). Lets assume we want to keep history for _180 days_.
 
