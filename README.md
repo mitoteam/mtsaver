@@ -10,7 +10,15 @@
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/y/mitoteam/mtsaver)](https://github.com/mitoteam/mtsaver/commits)
 [![GitHub downloads](https://img.shields.io/github/downloads/mitoteam/mtsaver/total)](https://github.com/mitoteam/mtsaver/releases)
 
-Simple directory differential backups command-line utility. Based on 7-Zip archiver available for all major platforms. Made to be simple yet powerful.
+Simple directory differential backups command-line utility. Based on 7-Zip archiver available for all major platforms.
+
+Made to be simple yet powerful:
+* No dependencies. Only 7-Zip is required! So no need for special software to explore or unpack created backups.
+* No database required: archiving and retention settings are in `.mtsaver.yml` file, other state info gathered on the fly from archives directory.
+* No installation required. Designed to be used as-is. Distributed as single executable file.
+* Both Windows and Linux, both x64 and x32 platforms support.
+* Flexible full/diff archives retention settings.
+* Ability to run some commands before or after backup creation.
 
 Trying to be self-explanatory (`mtsaver help`). More docs and manuals are being added.
 
@@ -69,7 +77,9 @@ total: 180 files, 37.5 Gb       # 6 planned full archives +1 unplanned in March 
                                 # 173 differential archives each of 12Mb average
 ```
 
-Compare **910.5 Gb** of storage space taken and **37.5 Gb**. We saved more than 95% of storage space and yet we have full half-year day-by-day history for directory!
+Compare **910.5 Gb** of storage space taken and **37.5 Gb**. We saved more than **95%** of storage space and yet we have **full half-year day-by-day history** for directory!
+
+Combine this with simple [syncthing](https://syncthing.net) setup for archives folder and you have differential cloud stored backups for free.
 
 ## Installation
 
