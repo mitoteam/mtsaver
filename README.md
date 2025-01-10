@@ -14,7 +14,7 @@ Simple directory differential backups command-line utility. Based on 7-Zip archi
 
 **Basics of differential backups idea**:
 1) Create full directory archive for first time backup is performed.
-2) Create archive with only changed, added (or removed!) files every next time...
+2) Create "_diff_" archive with only changed, added (or removed!) files every next time...
 3) ...until certain criteria met (like "_total diff archives size exceeds full archive size_" or "_diff archive is more than 20% of full archive size_". Create new full archive at this point (so diffs will be small again).
 4) Remove outdated full and diff archives (according to retention settings).
 
