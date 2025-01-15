@@ -55,3 +55,14 @@ version:
 .PHONY: clean
 clean:
 	rm -rf ${DIST_DIR}
+
+
+# Run all tests in root module and in known submodules
+.PHONY: tests
+tests::
+	clear
+	go test ./... $(SUBMODULES)
+
+# target alias: test = tests
+.PHONY: test
+test: tests
