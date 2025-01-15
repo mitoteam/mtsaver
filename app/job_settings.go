@@ -57,7 +57,8 @@ type JobSettings struct {
 	// Log file name
 	LogFilename      string `yaml:"log_filename" yaml_comment:"Name of file to add log messages to."`
 	LogFormat        string `yaml:"log_format" yaml_comment:"Possible values: text, json, disable. Default: text."`
-	LogCommandOutput bool   `yaml:"log_command_output" yaml_comment:"Add commands (from run_before) and 7-Zip output to log file"`
+	LogCommandOutput bool   `yaml:"log_command_output" yaml_comment:"Add commands (from run_before) and 7-Zip output to log file."`
+	LogMaxSize       int64  `yaml:"log_max_size" yaml_comment:"Log file size for it to be rotated. Default: 1Mb."`
 }
 
 // creates new settings with default values
@@ -74,6 +75,7 @@ func NewJobSettings() JobSettings {
 		LogFilename:        "_mtsaver.log",
 		LogFormat:          "text",
 		LogCommandOutput:   false,
+		LogMaxSize:         1024 * 1024, // 1Mb
 	}
 }
 

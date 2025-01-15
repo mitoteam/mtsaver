@@ -54,30 +54,7 @@ func NewJobFromArgs(args []string) (*Job, error) {
 
 	//initialize logger
 	if job.Settings.LogFormat == "text" || job.Settings.LogFormat == "json" {
-		logFilename := filepath.Join(job.Settings.ArchivesPath, job.Settings.LogFilename)
-		logExists := mttools.IsFileExists(logFilename)
-
-		job.logfile, err = os.OpenFile(logFilename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-		if err != nil {
-			log.Fatalf("Error opening log file %s: %v", logFilename, err)
-		}
-
-		if logExists {
-			//add some space to distinguish runs
-			job.logfile.WriteString("\n\n")
-		}
-
-		var logHandler slog.Handler
-
-		if job.Settings.LogFormat == "text" {
-			logHandler = slog.NewTextHandler(job.logfile, nil)
-		} else if job.Settings.LogFormat == "json" {
-			logHandler = slog.NewJSONHandler(job.logfile, nil)
-		} else {
-			log.Panicf("Unknown log format %s", job.Settings.LogFormat)
-		}
-
-		job.logger = slog.New(logHandler)
+		job.prepareLogger()
 	}
 
 	return job, nil
@@ -398,6 +375,65 @@ func (job *Job) Cleanup() error {
 	}
 
 	return nil
+}
+
+func (job *Job) prepareLogger() {
+	var err error
+	logFilepath := filepath.Join(job.Settings.ArchivesPath, job.Settings.LogFilename)
+	logExists := mttools.IsFileExists(logFilepath)
+	logRotated := false
+
+	if logExists {
+		if stat, err := os.Stat(logFilepath); err != nil {
+			log.Fatalf("Error checking log file size %s: %v", logFilepath, err)
+		} else {
+			if stat.Size() > job.Settings.LogMaxSize { //need rotate
+				//logger is not ready yet, so screen only
+				log.Println("Rotating log file")
+
+				prevLogFilepath := logFilepath + ".1"
+
+				if mttools.IsFileExists(prevLogFilepath) {
+					if err := os.Remove(prevLogFilepath); err != nil {
+						log.Fatalf("Error deleting file %s: %s", prevLogFilepath, err)
+					}
+				}
+
+				if err := os.Rename(logFilepath, prevLogFilepath); err != nil {
+					log.Fatalf("Error renaming file %s to %s: %s", logFilepath, prevLogFilepath, err)
+				}
+
+				logExists = false //new one will be created
+				logRotated = true
+			}
+		}
+	}
+
+	job.logfile, err = os.OpenFile(logFilepath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("Error opening log file %s: %v", logFilepath, err)
+	}
+
+	if logExists {
+		//add some space to distinguish runs
+		job.logfile.WriteString("\n\n")
+	}
+
+	var logHandler slog.Handler
+
+	if job.Settings.LogFormat == "text" {
+		logHandler = slog.NewTextHandler(job.logfile, nil)
+	} else if job.Settings.LogFormat == "json" {
+		logHandler = slog.NewJSONHandler(job.logfile, nil)
+	} else {
+		log.Panicf("Unknown log format %s", job.Settings.LogFormat)
+	}
+
+	job.logger = slog.New(logHandler)
+
+	if logRotated {
+		job.Log("Log file was rotated")
+	}
 }
 
 // Adds message to job's log
