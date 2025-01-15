@@ -55,8 +55,9 @@ type JobSettings struct {
 	RunBefore []string `yaml:"run_before" yaml_comment:"List of commands to run before creating archive"`
 
 	// Log file name
-	LogFilename string `yaml:"log_filename" yaml_comment:"Name of file to add log messages to."`
-	LogFormat   string `yaml:"log_format" yaml_comment:"Possible values: text, json, disable. Default: text."`
+	LogFilename      string `yaml:"log_filename" yaml_comment:"Name of file to add log messages to."`
+	LogFormat        string `yaml:"log_format" yaml_comment:"Possible values: text, json, disable. Default: text."`
+	LogCommandOutput bool   `yaml:"log_command_output" yaml_comment:"Add commands (from run_before) and 7-Zip output to log file"`
 }
 
 // creates new settings with default values
@@ -72,6 +73,7 @@ func NewJobSettings() JobSettings {
 		KeepSameDiff:       false,
 		LogFilename:        "_mtsaver.log",
 		LogFormat:          "text",
+		LogCommandOutput:   false,
 	}
 }
 
