@@ -128,6 +128,8 @@ Run `mtsaver run` command in directory with `.mtsaver.yml` file to create new ba
 
 You can use any scheduler (`cron` or _Windows Task Scheduler_) to run this command regularly to have your directory backups.
 
+By default mtsaver creates file `_mtsaver.log` file in archives directory with archiving logs. It has explanations why full or diff archive was created. You can disable log file by setting `log_format:` option to _disable_ in `.mtsaver.yml` file.
+
 ## Help
 
 Run `mtsaver help` for options and commands description.
