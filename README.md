@@ -115,7 +115,7 @@ Details: [scoop-bucket](https://github.com/mitoteam/scoop-bucket).
 
 ## Usage
 
-First you need to create a file with archiving settings: what to pack, where to pack, retention rules and so on. Just run `mtsaver init` in directory you want to backup. By default this file has `.mtsaver.yml` name. This will create `.mtsaver.yml` file with all possible settings and explanation.
+First you need to create a file with archiving settings: what to pack, where to pack, retention rules and so on. Just run `mtsaver init` in directory you want to backup. By default this file has `.mtsaver.yml` name. This will create `.mtsaver.yml` file with [all](app/job_settings.go) possible settings and explanations.
 
 Open created `.mtsaver.yml` file and edit settings you need. You can remove untouched default settings from this file to keep things simple. Important settings are:
 
