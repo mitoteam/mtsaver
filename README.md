@@ -3,22 +3,25 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/mitoteam/mtsaver)](https://goreportcard.com/report/github.com/mitoteam/mtsaver)
 ![GitHub](https://img.shields.io/github/license/mitoteam/mtsaver)
 ![GitHub code size](https://img.shields.io/github/languages/code-size/mitoteam/mtsaver)
+[![GitHub contributors](https://img.shields.io/github/contributors-anon/mitoteam/mtsaver)](https://github.com/mitoteam/mtsaver/graphs/contributors)
+[![Build&Tests](https://github.com/mitoteam/mtsaver/actions/workflows/go.yml/badge.svg)](https://github.com/mitoteam/mtsaver/actions/workflows/go.yml)
 
 [![GitHub Version](https://img.shields.io/github/v/release/mitoteam/mtsaver?logo=github)](https://github.com/mitoteam/mtsaver)
 [![GitHub Release Date](https://img.shields.io/github/release-date/mitoteam/mtsaver)](https://github.com/mitoteam/mtsaver/releases)
-[![GitHub contributors](https://img.shields.io/github/contributors-anon/mitoteam/mtsaver)](https://github.com/mitoteam/mtsaver/graphs/contributors)
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/y/mitoteam/mtsaver)](https://github.com/mitoteam/mtsaver/commits)
 [![GitHub downloads](https://img.shields.io/github/downloads/mitoteam/mtsaver/total)](https://github.com/mitoteam/mtsaver/releases)
 
 Simple directory differential backups command-line utility. Based on 7-Zip archiver available for all major platforms.
 
 **Basics of differential backups idea**:
+
 1) Create full directory archive for first time backup is performed.
 2) Create "_diff_" archive with only changed, added (or removed!) files every next time...
 3) ...until certain criteria met (like "_total diff archives size exceeds full archive size_" or "_diff archive is more than 20% of full archive size_". Create new full archive at this point (so diffs will be small again).
 4) Remove outdated full and diff archives (according to retention settings).
 
 **Made to be simple yet powerful**:
+
 * No dependencies. Only 7-Zip is required! So no need for special software to explore or unpack created backups.
 * No database required: archiving and retention settings are in `.mtsaver.yml` file, other state info gathered on the fly from archives directory.
 * No installation required. Designed to be used as-is. Distributed as single executable file.
