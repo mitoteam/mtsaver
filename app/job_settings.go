@@ -56,7 +56,7 @@ type JobSettings struct {
 
 	// Log file name
 	LogFilename      string `yaml:"log_filename" yaml_comment:"Name of file to add log messages to."`
-	LogFormat        string `yaml:"log_format" yaml_comment:"Possible values: 'text', 'json', 'no'. Default: text."`
+	LogFormat        string `yaml:"log_format" yaml_comment:"Log file format: text|json|no. Default: text. 'no' = disable logging."`
 	LogCommandOutput bool   `yaml:"log_command_output" yaml_comment:"Add commands (from run_before) and 7-Zip output to log file."`
 	LogMaxSize       int64  `yaml:"log_max_size" yaml_comment:"Log file size for it to be rotated. Default: 1Mb."`
 }

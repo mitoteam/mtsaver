@@ -357,9 +357,10 @@ func (job *Job) runSevenZip(arguments []string) string {
 }
 
 func (job *Job) Cleanup() error {
+	job.Log("Cleaning up")
+
 	//always re-scan archives before cleaning up
 	job.ScanArchive()
-	//DBG: job.Archive.Dump(true)
 
 	//delete FULL items
 	out_of_window_count := len(job.Archive.FullItemList) - job.Settings.MaxFullCount
