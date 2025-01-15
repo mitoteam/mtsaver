@@ -1,0 +1,33 @@
+name: Build&Tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set env
+      run: echo "TERM=linux" >> "$GITHUB_ENV"
+
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Checking out all submodules to the tip of a branch
+      run: git submodule foreach --recursive git checkout main
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '^1.23'
+        check-latest: true
+
+    - name: Build
+      run: go build -v ./...
+
+    - name: MT Tests
+      run: make tests

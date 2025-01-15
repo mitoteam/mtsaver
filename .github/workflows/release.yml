@@ -1,0 +1,58 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+    paths: [VERSION]
+  workflow_dispatch:
+
+jobs:
+  BuildAndRelease:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set environment variables
+      run: echo "TERM=linux" >> "$GITHUB_ENV"
+
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Checking out all submodules to the tip of a branch
+      run: git submodule foreach --recursive git checkout main
+
+    - name: Set and show version number
+      run: |
+        VERSION=$(cat VERSION)
+        echo "MT_VERSION=$VERSION" >> "$GITHUB_ENV"
+        echo "Release of v$VERSION" >> $GITHUB_STEP_SUMMARY
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '^1.23'
+        check-latest: true
+
+    - name: Set up 7-zip
+      uses: milliewalky/setup-7-zip@v2
+
+    - name: Build binaries
+      run: make
+
+    - name: Create GitHub Release
+      id: release
+      uses: softprops/action-gh-release@v1
+      with:
+        draft: true
+        tag_name: "v${{ env.MT_VERSION }}"
+        files: |
+          dist/mtsaver-${{ env.MT_VERSION }}-linux32.7z
+          dist/mtsaver-${{ env.MT_VERSION }}-linux64.7z
+          dist/mtsaver-${{ env.MT_VERSION }}-win32.7z
+          dist/mtsaver-${{ env.MT_VERSION }}-win64.7z
+          dist/checksums.sha256
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Version url
+      run: |
+        echo "Version v${{ env.MT_VERSION }} page ${{ steps.release.outputs.url }}" >> $GITHUB_STEP_SUMMARY
