@@ -51,8 +51,12 @@ type JobSettings struct {
 
 	KeepSameDiff bool `yaml:"keep_same_diff" yaml_comment:"false = delete diff archives if it has same sha256 hash as previous one (nothing new added), true = keep anyway"`
 
-	//Commands to run
+	// Commands to run
 	RunBefore []string `yaml:"run_before" yaml_comment:"List of commands to run before creating archive"`
+
+	// Log file name
+	LogFilename string `yaml:"log_filename" yaml_comment:"Name of file to add log messages to."`
+	LogFormat   string `yaml:"log_format" yaml_comment:"Possible values: text, json, disable. Default: text."`
 }
 
 // creates new settings with default values
@@ -66,6 +70,8 @@ func NewJobSettings() JobSettings {
 		MaxDiffSizePercent: 120,
 		KeepEmptyDiff:      false,
 		KeepSameDiff:       false,
+		LogFilename:        "_mtsaver.log",
+		LogFormat:          "text",
 	}
 }
 
@@ -115,7 +121,12 @@ func (js *JobSettings) ApplyDefaultsAndCheck(job_path string) {
 		js.CompressionLevel = 5
 	}
 
+	if js.LogFormat != "disable" && js.LogFormat != "text" && js.LogFormat != "json" {
+		log.Fatalf("Wrong log format: %s\n", js.LogFormat)
+	}
+
 	//// Override values from runtime options
+
 	//turn on solid mode for archives
 	if JobRuntimeOptions.Solid {
 		js.Solid = true

@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 	"log"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -16,6 +17,9 @@ type Job struct {
 	Path     string
 	Settings JobSettings
 	Archive  JobArchive
+
+	logger  *slog.Logger
+	logfile *os.File
 }
 
 // Creates new Job. If first argument given - using it as path to directory. If absent - using current directory.
@@ -39,15 +43,48 @@ func NewJobFromArgs(args []string) (*Job, error) {
 
 	job.LoadSettings()
 
+	// make sure archives directory exists
+	if !mttools.IsDirExists(job.Settings.ArchivesPath) {
+		if err := os.MkdirAll(job.Settings.ArchivesPath, 0777); err != nil {
+			return nil, err
+		}
+
+		job.Log("Archives directory created: %s", job.Settings.ArchivesPath)
+	}
+
+	//initialize logger
+	if job.Settings.LogFormat == "text" || job.Settings.LogFormat == "json" {
+		logFilename := filepath.Join(job.Settings.ArchivesPath, job.Settings.LogFilename)
+		logExists := mttools.IsFileExists(logFilename)
+
+		job.logfile, err = os.OpenFile(logFilename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+		if err != nil {
+			log.Fatalf("Error opening log file %s: %v", logFilename, err)
+		}
+
+		if logExists {
+			//add some space to distinguish runs
+			job.logfile.WriteString("\n\n")
+		}
+
+		var logHandler slog.Handler
+
+		if job.Settings.LogFormat == "text" {
+			logHandler = slog.NewTextHandler(job.logfile, nil)
+		} else if job.Settings.LogFormat == "json" {
+			logHandler = slog.NewJSONHandler(job.logfile, nil)
+		} else {
+			log.Panicf("Unknown log format %s", job.Settings.LogFormat)
+		}
+
+		job.logger = slog.New(logHandler)
+	}
+
 	return job, nil
 }
 
 func (job *Job) Run() error {
-	fmt.Printf("Starting directory backup: %s\n", job.Path)
-
-	if err := os.MkdirAll(job.Settings.ArchivesPath, 0777); err != nil {
-		return err
-	}
+	job.Log("Starting directory backup: %s", job.Path)
 
 	if job.Settings.Cleanup == "before" {
 		job.Cleanup()
@@ -58,13 +95,13 @@ func (job *Job) Run() error {
 
 	//run commands before creating new archive
 	if len(job.Settings.RunBefore) > 0 {
-		log.Println("Executing commands from 'run_before' option")
+		job.Log("Executing commands from 'run_before' option")
 
 		for _, command := range job.Settings.RunBefore {
-			log.Println("Command: " + command)
+			job.Log("Command: %s", command)
 
 			if err := mttools.ExecCommandLine(command, true); err != nil {
-				log.Println("Error: " + err.Error())
+				job.Log("Error: %s", err.Error())
 			}
 		}
 	}
@@ -73,7 +110,7 @@ func (job *Job) Run() error {
 		job.createArchive(true, "")
 	} else if JobRuntimeOptions.ForceDiff {
 		if len(job.Archive.FullItemList) == 0 {
-			log.Fatalln("can not force differential backup because no full backups found.")
+			log.Fatalln("Can not force differential backup because no full backups found.")
 		}
 
 		job.createArchive(false, job.Archive.FullItemList[len(job.Archive.FullItemList)-1].File.Path)
@@ -113,12 +150,16 @@ func (job *Job) Run() error {
 		job.Cleanup()
 	}
 
+	if job.logfile != nil {
+		job.logfile.Close()
+	}
+
 	return nil
 }
 
 func (job *Job) Dump() {
 	if !mttools.IsDirExists(job.Settings.ArchivesPath) {
-		fmt.Printf("%s directory does not exists", job.Settings.ArchivesPath)
+		fmt.Printf("%s directory does not exists\n", job.Settings.ArchivesPath)
 	}
 
 	job.ScanArchive()
@@ -256,7 +297,7 @@ func (job *Job) createArchive(is_full bool, full_archive_path string) {
 
 		if is_empty {
 			if !js.KeepEmptyDiff {
-				fmt.Printf("Empty diff archive created (%s). Removing it.", filepath.Base(job_archive_filename))
+				job.Log("Empty diff archive created (%s). Removing it.", filepath.Base(job_archive_filename))
 
 				if err = os.Remove(job_archive_filename); err != nil {
 					log.Fatalf("Error deleting file %s: %s", filepath.Base(job_archive_filename), err)
@@ -266,16 +307,13 @@ func (job *Job) createArchive(is_full bool, full_archive_path string) {
 			if !js.KeepSameDiff {
 				if prev_archive := job.Archive.LastFile(); prev_archive != nil {
 					if !prev_archive.IsFull {
-						//log.Printf("Prev hash: %s", prev_archive.Hash)
 
 						var last_hash string
 						last_hash, err = mttools.FileSha256(job_archive_filename)
 
 						if err == nil {
-							//log.Printf("Last hash: %s", last_hash)
-
 							if len(last_hash) > 0 && last_hash == prev_archive.Hash {
-								fmt.Printf("Diff archive with same sha256 created (%s). Removing it.", filepath.Base(job_archive_filename))
+								job.Log("Diff archive with same sha256 created (%s). Removing it.", filepath.Base(job_archive_filename))
 
 								if err = os.Remove(job_archive_filename); err != nil {
 									log.Fatalf("Error deleting file %s: %s", filepath.Base(job_archive_filename), err)
@@ -296,14 +334,9 @@ func runSevenZip(arguments []string) string {
 }
 
 func (job *Job) Cleanup() error {
-	//do cleanup only if archives directory exists
-	if !mttools.IsDirExists(job.Settings.ArchivesPath) {
-		return nil
-	}
-
 	//always re-scan archives before cleaning up
 	job.ScanArchive()
-	//job.Archive.Dump(true)
+	//DBG: job.Archive.Dump(true)
 
 	//delete FULL items
 	out_of_window_count := len(job.Archive.FullItemList) - job.Settings.MaxFullCount
@@ -319,4 +352,17 @@ func (job *Job) Cleanup() error {
 	}
 
 	return nil
+}
+
+// Adds message to job's log
+func (job *Job) Log(format string, args ...any) {
+	message := fmt.Sprintf(format, args...)
+
+	//always print to screen
+	log.Print(message)
+
+	// if file logger is defined write to it as well
+	if job.logger != nil {
+		job.logger.Info(message)
+	}
 }
