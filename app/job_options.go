@@ -10,6 +10,7 @@ var JobRuntimeOptions struct {
 	Solid            bool   // run --solid
 	Password         string // run --password <string>
 	EncryptFilenames bool   // run --encrypt-filenames
+	NoLog            bool   // run --no-log
 
 	DefaultsFrom string // init --defaults-from <string>
 	Print        bool   // init --print

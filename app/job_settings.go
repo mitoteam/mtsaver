@@ -56,7 +56,7 @@ type JobSettings struct {
 
 	// Log file name
 	LogFilename      string `yaml:"log_filename" yaml_comment:"Name of file to add log messages to."`
-	LogFormat        string `yaml:"log_format" yaml_comment:"Possible values: text, json, disable. Default: text."`
+	LogFormat        string `yaml:"log_format" yaml_comment:"Possible values: 'text', 'json', 'no'. Default: text."`
 	LogCommandOutput bool   `yaml:"log_command_output" yaml_comment:"Add commands (from run_before) and 7-Zip output to log file."`
 	LogMaxSize       int64  `yaml:"log_max_size" yaml_comment:"Log file size for it to be rotated. Default: 1Mb."`
 }
@@ -125,11 +125,9 @@ func (js *JobSettings) ApplyDefaultsAndCheck(job_path string) {
 		js.CompressionLevel = 5
 	}
 
-	if js.LogFormat != "disable" && js.LogFormat != "text" && js.LogFormat != "json" {
-		log.Fatalf("Wrong log format: %s\n", js.LogFormat)
-	}
-
-	//// Override values from runtime options
+	//--------------------------------------
+	// Override values from runtime options
+	//--------------------------------------
 
 	//turn on solid mode for archives
 	if JobRuntimeOptions.Solid {
@@ -146,7 +144,15 @@ func (js *JobSettings) ApplyDefaultsAndCheck(job_path string) {
 		js.EncryptFilenames = true
 	}
 
-	//// Do settings checks
+	//skip logging
+	if JobRuntimeOptions.NoLog {
+		js.LogFormat = "no"
+	}
+
+	//--------------------
+	// Do settings checks
+	//--------------------
+
 	if js.FullSuffix == js.DiffSuffix {
 		log.Fatalln("Full suffix should differ from diff suffix")
 	}
@@ -163,5 +169,13 @@ func (js *JobSettings) ApplyDefaultsAndCheck(job_path string) {
 
 	if js.MaxDiffCount < 0 {
 		log.Fatalln("Minimum value for max_diff_count is 0")
+	}
+
+	if js.LogFormat != "no" && js.LogFormat != "text" && js.LogFormat != "json" {
+		log.Fatalf("Wrong log format: %s\n", js.LogFormat)
+	}
+
+	if js.LogMaxSize < 10240 {
+		log.Fatalln("Minimum value for log_size_max is 10240 (10kb)")
 	}
 }

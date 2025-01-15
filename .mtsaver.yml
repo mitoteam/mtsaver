@@ -39,5 +39,5 @@ run_before:
   - "ls"
   - "whoami"
 
-log_command_output: true
-log_max_size: 2048 # log rotating test
+#log_command_output: true
+log_max_size: 10240 # log rotating test

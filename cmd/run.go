@@ -82,5 +82,10 @@ func init() {
 		"Encrypt filenames in archive (used only when password is set).",
 	)
 
+	cmd.Flags().BoolVar(
+		&app.JobRuntimeOptions.NoLog, "no-log", false,
+		"Do not create log file in archives directory (log_format: disable).",
+	)
+
 	rootCmd.AddCommand(cmd)
 }
