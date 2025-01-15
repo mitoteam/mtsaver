@@ -2,6 +2,9 @@ module mtsaver
 
 go 1.23
 
+//DEV versions of modules
+//replace github.com/mitoteam/mttools => ../mttools
+
 require (
 	github.com/mitoteam/mttools v1.0.3
 	github.com/spf13/cobra v1.8.1
