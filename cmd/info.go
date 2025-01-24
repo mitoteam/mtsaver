@@ -17,8 +17,10 @@ func init() {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			fmt.Println(" --- " + app.Global.AppName + " info --- ")
 			fmt.Println("Version: " + app.Global.Version)
+			fmt.Println("Website: " + app.Global.AppWebsite)
 			fmt.Println("Commit: " + app.Global.Commit)
 			fmt.Println("Built with: " + app.Global.BuiltWith)
+			fmt.Println()
 			fmt.Println("7-zip command: " + app.Global.SevenZipCmd)
 			fmt.Println("7-zip info: " + app.Global.SevenZipInfo)
 			fmt.Println()

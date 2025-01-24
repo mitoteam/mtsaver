@@ -20,6 +20,7 @@ var BuildCommit = "DEV"
 var Global struct {
 	AppName      string
 	Version      string
+	AppWebsite   string
 	Commit       string
 	BuiltWith    string
 	SevenZipCmd  string
@@ -28,6 +29,7 @@ var Global struct {
 
 func init() {
 	Global.AppName = "mtsaver"
+	Global.AppWebsite = "https://github.com/mitoteam/mtsaver"
 	Global.Version = BuildVersion
 	Global.Commit = BuildCommit
 	Global.BuiltWith = runtime.Version()

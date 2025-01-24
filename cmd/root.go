@@ -11,11 +11,10 @@ import (
 var rootCmd = &cobra.Command{
 	Use:     app.Global.AppName,
 	Version: app.Global.Version,
-	Long: app.Global.AppName + ` - differential backup archives retention tool.
+	Long: app.Global.AppName + " - differential backup archives retention tool.\n" + app.Global.AppWebsite +
+		`
 
-Based on 7-Zip archiver https://www.7-zip.org
-
-Copyright: MiTo Team, https://mito-team.com`,
+Based on 7-Zip archiver https://www.7-zip.org`,
 
 	//disable 'completion' subcommand
 	CompletionOptions: cobra.CompletionOptions{DisableDefaultCmd: true},
