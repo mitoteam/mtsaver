@@ -3,8 +3,6 @@ github.com/drhodes/golorem v0.0.0-20220328165741-da82e5b29246 h1:m0+1paUpmLlBpUx
 github.com/drhodes/golorem v0.0.0-20220328165741-da82e5b29246/go.mod h1:NsKVpF4h4j13Vm6Cx7Kf0V03aJKjfaStvm5rvK4+FyQ=
 github.com/inconshreveable/mousetrap v1.1.0 h1:wN+x4NVGpMsO7ErUn/mUI3vEoE6Jt13X2s0bqwp9tc8=
 github.com/inconshreveable/mousetrap v1.1.0/go.mod h1:vpF70FUmC8bwa3OWnCshd2FqLfsEA9PFc4w1p2J65bw=
-github.com/mitoteam/mttools v1.0.3 h1:sDSMbSCV3rChOElvLQMp3B1UxUckK898N1w3QLFpP5o=
-github.com/mitoteam/mttools v1.0.3/go.mod h1:pgReIWU3E5FzIcyzB1JqPYIvsszInvFosMsd5v+qK00=
 github.com/mitoteam/mttools v1.0.4 h1:vGLPCuNPPd/f+6OnPS8lCaAXa+MUxxcp7j0iTSPLvsI=
 github.com/mitoteam/mttools v1.0.4/go.mod h1:pgReIWU3E5FzIcyzB1JqPYIvsszInvFosMsd5v+qK00=
 github.com/russross/blackfriday/v2 v2.1.0/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
