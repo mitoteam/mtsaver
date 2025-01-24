@@ -348,6 +348,8 @@ func (job *Job) createArchive(is_full bool, full_archive_path string) {
 }
 
 func (job *Job) runSevenZip(arguments []string) string {
+	job.Log("Command line: %s %s", Global.SevenZipCmd, strings.Join(arguments, " "))
+
 	output, err := mttools.ExecCmdWaitAndPrint(Global.SevenZipCmd, arguments)
 
 	if err != nil {
