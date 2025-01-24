@@ -11,7 +11,9 @@ import (
 var rootCmd = &cobra.Command{
 	Use:     app.Global.AppName,
 	Version: app.Global.Version,
-	Long: app.Global.AppName + " - differential backup archives retention tool.\n" + app.Global.AppWebsite +
+	Long: app.Global.AppName + " v" + app.Global.Version +
+		" - differential backup archives retention tool.\n" +
+		app.Global.AppWebsite +
 		`
 
 Based on 7-Zip archiver https://www.7-zip.org`,
