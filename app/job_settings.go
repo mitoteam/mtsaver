@@ -26,6 +26,9 @@ type JobSettings struct {
 	//Create solid archives
 	Solid bool `yaml_comment:"Create solid 7-zip archives"`
 
+	//multithread 7-zip mode
+	MultithreadCompressionMode string `yaml:"multithread_compression_mode" yaml_comment:"Sets 7-zip multithread mode (https://mttm.in/47). Possible values: off|on|{N}"`
+
 	//List of patterns to exclude from archive
 	Exclude []string `yaml_comment:"List of patterns to exclude from archive"`
 

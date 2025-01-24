@@ -11,6 +11,7 @@ diff_suffix: DIFF
 compression_level: 9
 # create solid 7-zip archives
 solid: true
+multithread_compression_mode: 3
 
 # list of patterns to exclude from archiving
 exclude:

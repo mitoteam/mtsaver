@@ -244,6 +244,11 @@ func (job *Job) createArchive(is_full bool, full_archive_path string) {
 		common_arguments = append(common_arguments, "-ms=on")
 	}
 
+	//set Multithread Mode
+	if js.MultithreadCompressionMode != "" {
+		common_arguments = append(common_arguments, "-mmt="+js.MultithreadCompressionMode)
+	}
+
 	//set password for archive
 	if len(js.Password) > 0 {
 		common_arguments = append(common_arguments, "-p"+js.Password)
