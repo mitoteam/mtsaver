@@ -61,7 +61,7 @@ func NewJobFromArgs(args []string) (*Job, error) {
 }
 
 func (job *Job) Run() error {
-	job.Log("Starting directory backup: %s", job.Path)
+	job.Log("[%s v%s] Starting directory backup: %s", Global.AppName, Global.Version, job.Path)
 
 	if job.Settings.Cleanup == "before" {
 		job.Cleanup()

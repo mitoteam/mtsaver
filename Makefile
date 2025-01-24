@@ -66,3 +66,9 @@ tests::
 # target alias: test = tests
 .PHONY: test
 test: tests
+
+
+.PHONY: run
+run:
+	clear
+	go run main.go run
