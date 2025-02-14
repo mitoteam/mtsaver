@@ -10,7 +10,7 @@ import (
 func init() {
 	rootCmd.AddCommand(&cobra.Command{
 		Use:   "version",
-		Short: "Print the raw version number of " + app.Global.AppName + ".",
+		Short: "Prints the raw version number of " + app.Global.AppName + ".",
 
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println(app.Global.Version)

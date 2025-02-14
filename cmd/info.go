@@ -12,7 +12,7 @@ import (
 func init() {
 	rootCmd.AddCommand(&cobra.Command{
 		Use:   "info [/path/to/directory]",
-		Short: "Print information about system, environment etc. If path is given settings for that folder are printed as well.",
+		Short: "Prints information about system, environment etc. If path is given settings for that folder are printed as well.",
 
 		RunE: func(cmd *cobra.Command, args []string) error {
 			fmt.Println(" --- " + app.Global.AppName + " info --- ")

@@ -9,7 +9,7 @@ import (
 func init() {
 	cmd := &cobra.Command{
 		Use:   "dump [/path/to/directory]",
-		Short: "Print all archives created for directory",
+		Short: "Prints all archives created for directory",
 		Long:  "Prints all archives created for directory with information about archives: size, age, diffs list and so on.",
 
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {

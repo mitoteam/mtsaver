@@ -25,6 +25,7 @@ var Global struct {
 	BuiltWith    string
 	SevenZipCmd  string
 	SevenZipInfo string
+	License      string
 }
 
 func init() {
