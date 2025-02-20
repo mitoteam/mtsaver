@@ -92,7 +92,11 @@ Combine this with simple [syncthing](https://syncthing.net) setup for archives f
 
 ## Installation
 
-### Using Scoop (Windows)
+### Using Scoop
+
+Scoop is useful command-line installer and updater for Windows.
+
+* Install `scoop`: https://github.com/ScoopInstaller/Scoop/wiki/Quick-Start
 
 * Add bucket:
 
