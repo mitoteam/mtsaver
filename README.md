@@ -96,9 +96,9 @@ Combine this with simple [syncthing](https://syncthing.net) setup for archives f
 
 Scoop is useful command-line installer and updater for Windows.
 
-* Install `scoop`: https://github.com/ScoopInstaller/Scoop/wiki/Quick-Start
+* Install `scoop` (_if you have not already_): https://github.com/ScoopInstaller/Scoop/wiki/Quick-Start
 
-* Add bucket:
+* Add bucket (_if you have not already_):
 
 ```sh
 scoop bucket add mitoteam https://github.com/mitoteam/scoop-bucket
@@ -107,10 +107,14 @@ scoop bucket add mitoteam https://github.com/mitoteam/scoop-bucket
 * Install:
 
 ```sh
-scoop install mtsaver
+scoop install mitoteam/mtsaver
 ```
 
-Details: [scoop-bucket](https://github.com/mitoteam/scoop-bucket).
+* Update:
+
+```sh
+scoop update mtsaver
+```
 
 ### Manual installation (Windows or Linux)
 
