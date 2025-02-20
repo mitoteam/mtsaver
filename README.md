@@ -96,7 +96,7 @@ Combine this with simple [syncthing](https://syncthing.net) setup for archives f
 
 Scoop is useful command-line installer and updater for Windows.
 
-* Install `scoop` (_if you have not already_): https://github.com/ScoopInstaller/Scoop/wiki/Quick-Start
+* Install `scoop` (_if you have not already_): https://scoop.sh
 
 * Add bucket (_if you have not already_):
 
