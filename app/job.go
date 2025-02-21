@@ -472,3 +472,10 @@ func (job *Job) RawLog(content string) {
 		job.logfile.WriteString(content)
 	}
 }
+
+func (job *Job) Restore(to string, ja *JobArchiveFile) error {
+	job.Log("[%s v%s] Starting directory restore: %s", Global.AppName, Global.Version, job.Path)
+
+	job.Log("Unpacking")
+	return nil
+}
