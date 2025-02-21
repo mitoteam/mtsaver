@@ -474,7 +474,36 @@ func (job *Job) RawLog(content string) {
 }
 
 func (job *Job) Restore(to string, ja *JobArchiveFile) error {
-	job.Log("Unpacking [PLACEHOLDER]")
+	var full *JobArchiveFullItem
+	var diff *JobArchiveDiffItem
+
+	//Look for items for this file
+	for _, full_item := range job.Archive.FullItemList {
+		if full_item.File.Path == ja.Path {
+			full = &full_item
+			break
+		}
+
+		for _, diff_item := range full_item.DiffItemList {
+			if diff_item.File.Path == ja.Path {
+				full = &full_item
+				diff = diff_item
+				break
+			}
+		}
+	}
+
+	job.Log("Unpacking [PLACEHOLDER] %s", ja.Path)
+
+	if full == nil {
+		return fmt.Errorf("Full archive not found")
+	}
+
+	job.Log("Unpacking FULL archive %s", full.File.Path)
+
+	if diff != nil {
+		job.Log("Unpacking DIFF archive %s over FULL", diff.File.Path)
+	}
 
 	return nil
 }
