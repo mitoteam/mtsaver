@@ -3,7 +3,9 @@ package cmd
 import (
 	"fmt"
 	"mtsaver/app"
+	"os"
 
+	"github.com/mitoteam/mttools"
 	"github.com/spf13/cobra"
 )
 
@@ -32,17 +34,46 @@ func init() {
 				return fmt.Errorf("Directory %s does not contain %s file", job.Path, app.DefaultSettingsFilename)
 			}
 
+			// check path provided
+			if app.JobRuntimeOptions.To == "" {
+				return fmt.Errorf("--to option is required")
+			}
+
+			if app.JobRuntimeOptions.To, err = mttools.GetDirAbsolutePath(app.JobRuntimeOptions.To); err != nil {
+				//ignore "directory does not exists" error
+				if err.Error() != fmt.Sprintf("\"%s\" directory does not exists", app.JobRuntimeOptions.To) {
+					return err
+				}
+			}
+
+			if mttools.IsDirExists(app.JobRuntimeOptions.To) {
+				empty, err := mttools.IsDirEmpty(app.JobRuntimeOptions.To)
+
+				if err != nil {
+					return err
+				}
+
+				if !empty {
+					return fmt.Errorf("Directory %s is not empty", app.JobRuntimeOptions.To)
+				}
+			} else {
+				if err := os.MkdirAll(app.JobRuntimeOptions.To, 0777); err != nil {
+					return err
+				}
+
+				job.Log("Destination directory created: %s", app.JobRuntimeOptions.To)
+			}
+
 			//get all available archives
 			job.ScanArchive()
 
-			var to string
 			var ja *app.JobArchiveFile
 
 			if app.JobRuntimeOptions.Latest {
 				ja = job.Archive.LastFile()
 			}
 
-			if err = job.Restore(to, ja); err != nil {
+			if err = job.Restore(app.JobRuntimeOptions.To, ja); err != nil {
 				return err
 			}
 
@@ -51,12 +82,12 @@ func init() {
 	}
 
 	cmd.Flags().BoolVar(
-		&app.JobRuntimeOptions.ForceFull, "latest", false,
+		&app.JobRuntimeOptions.Latest, "latest", false,
 		"Restore latest available FULL+DIFF pair without asking.",
 	)
 
 	cmd.Flags().StringVar(
-		&app.JobRuntimeOptions.Password, "to", "",
+		&app.JobRuntimeOptions.To, "to", "",
 		"[REQUIRED] Path to directory to unpack archives. Directory should not exist or should be empty.",
 	)
 
