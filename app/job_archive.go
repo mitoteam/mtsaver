@@ -41,7 +41,7 @@ type JobArchive struct {
 	FullItemList []JobArchiveFullItem // Full archives list with diffs listed in DiffItemList
 }
 
-func (job *Job) ScanArchive() {
+func (job *Job) ScanArchive(addLog bool) {
 	files_list, err := os.ReadDir(job.Settings.ArchivesPath)
 	if err != nil {
 		log.Fatalln(err)
@@ -171,32 +171,34 @@ func (job *Job) ScanArchive() {
 		full_item.TotalDiffSizePercent = int(total_diff_size * 100 / full_item.File.Size)
 	}
 
-	job.Log(
-		"Archives scan done. Total archives: %d. Full archives: %d",
-		len(job.Archive.FilesList), len(job.Archive.FullItemList),
-	)
-
-	if len(job.Archive.FullItemList) > 0 {
-		firstFullArch := job.Archive.FullItemList[0]
-
+	if addLog {
 		job.Log(
-			"Oldest archive: %s, age (days): %d",
-			firstFullArch.File.Name, firstFullArch.File.Age,
+			"Archives scan done. Total archives: %d. Full archives: %d",
+			len(job.Archive.FilesList), len(job.Archive.FullItemList),
 		)
 
-		lastFullArch := job.Archive.FullItemList[len(job.Archive.FullItemList)-1]
-		lastFullArchInfo := fmt.Sprintf(
-			"Newest full archive: %s, age (days): %d, diffs count: %d, total diffs size: %d%%",
-			lastFullArch.File.Name, lastFullArch.File.Age, len(lastFullArch.DiffItemList),
-			lastFullArch.TotalDiffSizePercent,
-		)
+		if len(job.Archive.FullItemList) > 0 {
+			firstFullArch := job.Archive.FullItemList[0]
 
-		if len(lastFullArch.DiffItemList) > 0 {
-			lastDiffArch := lastFullArch.DiffItemList[len(lastFullArch.DiffItemList)-1]
-			lastFullArchInfo += fmt.Sprintf(", last diff size: %d%%", lastDiffArch.DiffSizePercent)
+			job.Log(
+				"Oldest archive: %s, age (days): %d",
+				firstFullArch.File.Name, firstFullArch.File.Age,
+			)
+
+			lastFullArch := job.Archive.FullItemList[len(job.Archive.FullItemList)-1]
+			lastFullArchInfo := fmt.Sprintf(
+				"Newest full archive: %s, age (days): %d, diffs count: %d, total diffs size: %d%%",
+				lastFullArch.File.Name, lastFullArch.File.Age, len(lastFullArch.DiffItemList),
+				lastFullArch.TotalDiffSizePercent,
+			)
+
+			if len(lastFullArch.DiffItemList) > 0 {
+				lastDiffArch := lastFullArch.DiffItemList[len(lastFullArch.DiffItemList)-1]
+				lastFullArchInfo += fmt.Sprintf(", last diff size: %d%%", lastDiffArch.DiffSizePercent)
+			}
+
+			job.Log("%s", lastFullArchInfo)
 		}
-
-		job.Log("%s", lastFullArchInfo)
 	}
 }
 

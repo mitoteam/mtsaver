@@ -67,7 +67,7 @@ func (job *Job) Run() error {
 		job.Cleanup()
 	}
 
-	job.ScanArchive()
+	job.ScanArchive(true)
 	//job.Archive.Dump(false)
 
 	//run commands before creating new archive
@@ -168,7 +168,7 @@ func (job *Job) Dump() {
 		fmt.Printf("%s directory does not exists\n", job.Settings.ArchivesPath)
 	}
 
-	job.ScanArchive()
+	job.ScanArchive(true)
 	job.Archive.Dump(false)
 }
 
@@ -367,7 +367,7 @@ func (job *Job) Cleanup() error {
 	job.Log("Cleaning up")
 
 	//always re-scan archives before cleaning up
-	job.ScanArchive()
+	job.ScanArchive(false)
 
 	//delete FULL items
 	out_of_window_count := len(job.Archive.FullItemList) - job.Settings.MaxFullCount
@@ -474,8 +474,7 @@ func (job *Job) RawLog(content string) {
 }
 
 func (job *Job) Restore(to string, ja *JobArchiveFile) error {
-	job.Log("[%s v%s] Starting directory restore: %s", Global.AppName, Global.Version, job.Path)
+	job.Log("Unpacking [PLACEHOLDER]")
 
-	job.Log("Unpacking")
 	return nil
 }

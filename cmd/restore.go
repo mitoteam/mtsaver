@@ -46,6 +46,8 @@ func init() {
 				}
 			}
 
+			job.Log("[%s v%s] Starting directory restore: %s", app.Global.AppName, app.Global.Version, job.Path)
+
 			if mttools.IsDirExists(app.JobRuntimeOptions.To) {
 				empty, err := mttools.IsDirEmpty(app.JobRuntimeOptions.To)
 
@@ -65,12 +67,14 @@ func init() {
 			}
 
 			//get all available archives
-			job.ScanArchive()
+			job.ScanArchive(app.JobRuntimeOptions.Latest)
 
 			var ja *app.JobArchiveFile
 
 			if app.JobRuntimeOptions.Latest {
 				ja = job.Archive.LastFile()
+			} else {
+				ja = nil
 			}
 
 			if err = job.Restore(app.JobRuntimeOptions.To, ja); err != nil {
