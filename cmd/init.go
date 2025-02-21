@@ -60,7 +60,7 @@ want to change and remove all others to keep this as simple as possible.
 
 	cmd.Flags().BoolVar(
 		&app.JobRuntimeOptions.Print, "print", false,
-		"print default settings instead writing to file",
+		"print default settings instead of writing to file",
 	)
 
 	rootCmd.AddCommand(cmd)
