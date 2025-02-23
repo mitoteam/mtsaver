@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"mtsaver/app"
 	"os"
@@ -75,6 +76,24 @@ func init() {
 				ja = job.Archive.LastFile()
 			} else {
 				ja = nil
+
+				//prepare options
+				options := make([]string, 0, len(job.Archive.FilesList))
+				for _, f := range job.Archive.FilesList {
+					options = append(options, f.Name)
+				}
+
+				choice, err := mttools.AskUserChoiceSingle("Choose archive to restore: ", options)
+
+				if err != nil {
+					return err
+				}
+
+				if choice == -1 {
+					return errors.New("No archive selected")
+				}
+
+				ja = &job.Archive.FilesList[choice]
 			}
 
 			if err = job.Restore(app.JobRuntimeOptions.To, ja); err != nil {

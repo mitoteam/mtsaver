@@ -493,8 +493,6 @@ func (job *Job) Restore(to string, ja *JobArchiveFile) error {
 		}
 	}
 
-	job.Log("Unpacking [PLACEHOLDER] %s", ja.Path)
-
 	if full == nil {
 		return fmt.Errorf("Full archive not found")
 	}
