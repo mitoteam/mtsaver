@@ -474,6 +474,8 @@ func (job *Job) RawLog(content string) {
 }
 
 func (job *Job) Restore(to string, ja *JobArchiveFile) error {
+	job.Log("Destination directory: %s", to)
+
 	var full *JobArchiveFullItem
 	var diff *JobArchiveDiffItem
 
@@ -497,10 +499,23 @@ func (job *Job) Restore(to string, ja *JobArchiveFile) error {
 		return fmt.Errorf("Full archive not found")
 	}
 
+	var common_arguments = []string{
+		"x",       // 7-zip command (eXtract), basic compression settings
+		"-o" + to, // Output directory
+	}
+
+	if len(job.Settings.Password) > 0 {
+		common_arguments = append(common_arguments, "-p"+job.Settings.Password) // archive password
+	}
+
 	job.Log("Unpacking FULL archive %s", full.File.Path)
+	job.runSevenZip(append(common_arguments, full.File.Path))
 
 	if diff != nil {
+		common_arguments = append(common_arguments, "-aoa") //Overwrite all existing files without prompt
+
 		job.Log("Unpacking DIFF archive %s over FULL", diff.File.Path)
+		job.runSevenZip(append(common_arguments, diff.File.Path))
 	}
 
 	return nil
