@@ -138,6 +138,8 @@ You can use any scheduler (`cron` or _Windows Task Scheduler_) to run this comma
 
 By default mtsaver creates file `_mtsaver.log` file in archives directory with archiving logs. It has explanations why full or diff archive was created. You can disable log file by setting `log_format:` option to _disable_ in `.mtsaver.yml` file (or use `--no-log` command-line argument).
 
+There is also `restore` command available if you want to unpack FULL+DIFF archives in empty directory. It just runs 7-Zip with "unpack" arguments. This is the same as unpacking archives manually. `--latest` argument unpacks latest FULL+DIFF archive available. Without `--latest` argument program will ask interactively for archive you want to unpack.
+
 ## Help
 
 Run `mtsaver help` for options and commands description.
