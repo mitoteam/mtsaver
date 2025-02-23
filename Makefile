@@ -72,3 +72,10 @@ test: tests
 run:
 	clear
 	go run main.go run
+
+
+.PHONY: deps
+deps:
+	clear
+	go get -u
+	go mod tidy

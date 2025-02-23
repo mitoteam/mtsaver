@@ -6,7 +6,7 @@ go 1.24
 //replace github.com/mitoteam/mttools => ../mttools
 
 require (
-	github.com/mitoteam/mttools v1.0.6
+	github.com/mitoteam/mttools v1.0.7
 	github.com/spf13/cobra v1.9.1
 )
 
