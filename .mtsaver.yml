@@ -17,6 +17,7 @@ multithread_compression_mode: 3
 exclude:
   - ".vscode"
   - ".git"
+  - "dist/*"
   - "*.exe"
 
 

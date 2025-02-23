@@ -67,7 +67,7 @@ func (job *Job) Run() error {
 		job.Cleanup()
 	}
 
-	job.ScanArchive()
+	job.ScanArchive(true)
 	//job.Archive.Dump(false)
 
 	//run commands before creating new archive
@@ -168,7 +168,7 @@ func (job *Job) Dump() {
 		fmt.Printf("%s directory does not exists\n", job.Settings.ArchivesPath)
 	}
 
-	job.ScanArchive()
+	job.ScanArchive(true)
 	job.Archive.Dump(false)
 }
 
@@ -367,7 +367,7 @@ func (job *Job) Cleanup() error {
 	job.Log("Cleaning up")
 
 	//always re-scan archives before cleaning up
-	job.ScanArchive()
+	job.ScanArchive(false)
 
 	//delete FULL items
 	out_of_window_count := len(job.Archive.FullItemList) - job.Settings.MaxFullCount
@@ -471,4 +471,52 @@ func (job *Job) RawLog(content string) {
 	if job.logfile != nil && job.Settings.LogCommandOutput {
 		job.logfile.WriteString(content)
 	}
+}
+
+func (job *Job) Restore(to string, ja *JobArchiveFile) error {
+	job.Log("Destination directory: %s", to)
+
+	var full *JobArchiveFullItem
+	var diff *JobArchiveDiffItem
+
+	//Look for items for this file
+	for _, full_item := range job.Archive.FullItemList {
+		if full_item.File.Path == ja.Path {
+			full = &full_item
+			break
+		}
+
+		for _, diff_item := range full_item.DiffItemList {
+			if diff_item.File.Path == ja.Path {
+				full = &full_item
+				diff = diff_item
+				break
+			}
+		}
+	}
+
+	if full == nil {
+		return fmt.Errorf("Full archive not found")
+	}
+
+	var common_arguments = []string{
+		"x",       // 7-zip command (eXtract), basic compression settings
+		"-o" + to, // Output directory
+	}
+
+	if len(job.Settings.Password) > 0 {
+		common_arguments = append(common_arguments, "-p"+job.Settings.Password) // archive password
+	}
+
+	job.Log("Unpacking FULL archive %s", full.File.Path)
+	job.runSevenZip(append(common_arguments, full.File.Path))
+
+	if diff != nil {
+		common_arguments = append(common_arguments, "-aoa") //Overwrite all existing files without prompt
+
+		job.Log("Unpacking DIFF archive %s over FULL", diff.File.Path)
+		job.runSevenZip(append(common_arguments, diff.File.Path))
+	}
+
+	return nil
 }
