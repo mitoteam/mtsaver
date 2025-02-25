@@ -36,43 +36,43 @@ func init() {
 			}
 
 			// check path provided
-			if app.JobRuntimeOptions.To == "" {
+			if app.JobRuntimeOptions.RestoreTo == "" {
 				return fmt.Errorf("--to option is required")
 			}
 
-			if app.JobRuntimeOptions.To, err = mttools.GetDirAbsolutePath(app.JobRuntimeOptions.To); err != nil {
+			if app.JobRuntimeOptions.RestoreTo, err = mttools.GetDirAbsolutePath(app.JobRuntimeOptions.RestoreTo); err != nil {
 				//ignore "directory does not exists" error
-				if err.Error() != fmt.Sprintf("\"%s\" directory does not exists", app.JobRuntimeOptions.To) {
+				if err.Error() != fmt.Sprintf("\"%s\" directory does not exists", app.JobRuntimeOptions.RestoreTo) {
 					return err
 				}
 			}
 
 			job.Log("[%s v%s] Starting directory restore: %s", app.Global.AppName, app.Global.Version, job.Path)
 
-			if mttools.IsDirExists(app.JobRuntimeOptions.To) {
-				empty, err := mttools.IsDirEmpty(app.JobRuntimeOptions.To)
+			if mttools.IsDirExists(app.JobRuntimeOptions.RestoreTo) {
+				empty, err := mttools.IsDirEmpty(app.JobRuntimeOptions.RestoreTo)
 
 				if err != nil {
 					return err
 				}
 
 				if !empty {
-					return fmt.Errorf("Directory %s is not empty", app.JobRuntimeOptions.To)
+					return fmt.Errorf("Directory %s is not empty", app.JobRuntimeOptions.RestoreTo)
 				}
 			} else {
-				if err := os.MkdirAll(app.JobRuntimeOptions.To, 0777); err != nil {
+				if err := os.MkdirAll(app.JobRuntimeOptions.RestoreTo, 0777); err != nil {
 					return err
 				}
 
-				job.Log("Destination directory created: %s", app.JobRuntimeOptions.To)
+				job.Log("Destination directory created: %s", app.JobRuntimeOptions.RestoreTo)
 			}
 
 			//get all available archives
-			job.ScanArchive(app.JobRuntimeOptions.Latest)
+			job.ScanArchive(app.JobRuntimeOptions.RestoreLatest)
 
 			var ja *app.JobArchiveFile
 
-			if app.JobRuntimeOptions.Latest {
+			if app.JobRuntimeOptions.RestoreLatest {
 				ja = job.Archive.LastFile()
 			} else {
 				ja = nil
@@ -96,7 +96,7 @@ func init() {
 				ja = &job.Archive.FilesList[choice]
 			}
 
-			if err = job.Restore(app.JobRuntimeOptions.To, ja); err != nil {
+			if err = job.Restore(app.JobRuntimeOptions.RestoreTo, ja); err != nil {
 				return err
 			}
 
@@ -105,12 +105,12 @@ func init() {
 	}
 
 	cmd.Flags().BoolVar(
-		&app.JobRuntimeOptions.Latest, "latest", false,
+		&app.JobRuntimeOptions.RestoreLatest, "latest", false,
 		"Restore latest available FULL+DIFF pair without asking.",
 	)
 
 	cmd.Flags().StringVar(
-		&app.JobRuntimeOptions.To, "to", "",
+		&app.JobRuntimeOptions.RestoreTo, "to", "",
 		"[REQUIRED] Path to directory to unpack archives. Directory should not exist or should be empty.",
 	)
 

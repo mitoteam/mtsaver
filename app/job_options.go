@@ -15,8 +15,8 @@ var JobRuntimeOptions struct {
 	DefaultsFrom string // init --defaults-from <string>
 	Print        bool   // init --print
 
-	To     string // restore --to
-	Latest bool   // restore --latest
+	RestoreTo     string // restore --to
+	RestoreLatest bool   // restore --latest
 }
 
 func init() {
