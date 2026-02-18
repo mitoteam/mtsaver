@@ -22,7 +22,8 @@ Simple directory differential backups command-line utility. Based on 7-Zip archi
 
 **Made to be simple yet powerful**:
 
-* No dependencies. Only 7-Zip is required! So no need for special software to explore or unpack created backups. And by using 7-Zip: good compression ratio, ability to pack locked files, multi-threded packing.
+* No dependencies. Only 7-Zip is required! So no need for special software to explore or unpack created backups.
+* And by using 7-Zip: good compression ratio, ability to pack locked files, multi-threded packing, archive encryption support.
 * No database required: archiving and retention settings are in `.mtsaver.yml` file, other state info gathered on the fly from archives directory.
 * No installation required. Designed to be used as-is. Distributed as single executable file.
 * Both Windows and Linux, both x64 and x32 platforms support.
