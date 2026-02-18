@@ -17,12 +17,12 @@ Simple directory differential backups command-line utility. Based on 7-Zip archi
 
 1) Create full directory archive for first time backup is performed.
 2) Create "_diff_" archive with only changed, added (or removed!) files every next time...
-3) ...until certain criteria met (like "_total diff archives size exceeds full archive size_" or "_diff archive is more than 20% of full archive size_". Create new full archive at this point (so diffs will be small again).
+3) ...until certain criteria met (like "_total diff archives size exceeds full archive size_" or "_diff archive is more than 20% of full archive size_" or just "_every 10th day_"). Create new full archive at this point (so diffs will be small again).
 4) Remove outdated full and diff archives (according to retention settings).
 
 **Made to be simple yet powerful**:
 
-* No dependencies. Only 7-Zip is required! So no need for special software to explore or unpack created backups.
+* No dependencies. Only 7-Zip is required! So no need for special software to explore or unpack created backups. And by using 7-Zip: good compression ratio, ability to pack locked files, multi-threded packing.
 * No database required: archiving and retention settings are in `.mtsaver.yml` file, other state info gathered on the fly from archives directory.
 * No installation required. Designed to be used as-is. Distributed as single executable file.
 * Both Windows and Linux, both x64 and x32 platforms support.
@@ -88,7 +88,7 @@ total: 180 files, 37.5 Gb       # 6 planned full archives +1 unplanned in March 
 
 Compare **910.5 Gb** of storage space taken and **37.5 Gb**. We saved more than **95%** of storage space and yet we have **full half-year day-by-day history** for directory!
 
-Combine this with simple [syncthing](https://syncthing.net) setup for archives folder and you have differential cloud stored backups for free.
+Combine this with simple [syncthing](https://syncthing.net) setup for archives folder and you have differential cloud stored backups for **FREE**.
 
 ## Installation
 
