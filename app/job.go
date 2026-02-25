@@ -216,6 +216,7 @@ func (job *Job) createArchive(is_full bool, full_archive_path string) {
 	var common_arguments = []string{} //7-zip command (add or update), basic compression settings
 	job_archive_filename := job.getArchiveName(is_full)
 	var err error
+	start_time := time.Now()
 	js := &job.Settings //convenience variable
 
 	if is_full {
@@ -310,6 +311,17 @@ func (job *Job) createArchive(is_full bool, full_archive_path string) {
 	}
 
 	job.Log("%s archive created: %s", archType, job_archive_filename)
+
+	// add packing duration to log
+	var duration_str string
+
+	duration := time.Since(start_time).Round(time.Second)
+	if duration < time.Second {
+		duration_str = "less than one second"
+	} else {
+		duration_str = duration.String()
+	}
+	job.Log("Packing took: %s", duration_str)
 
 	//check if empty diff was created
 	if !is_full {
