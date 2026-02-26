@@ -13,7 +13,7 @@ jobs:
     - name: Set env
       run: echo "TERM=linux" >> "$GITHUB_ENV"
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         submodules: recursive
 
@@ -21,9 +21,9 @@ jobs:
       run: git submodule foreach --recursive git checkout main
 
     - name: Set up Go
-      uses: actions/setup-go@v5
+      uses: actions/setup-go@v6
       with:
-        go-version: '^1.24'
+        go-version: '^1.26'
         check-latest: true
 
     - name: Build
