@@ -1,6 +1,5 @@
 # mtsaver - differential backup archives management
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/mitoteam/mtsaver)](https://goreportcard.com/report/github.com/mitoteam/mtsaver)
 ![GitHub](https://img.shields.io/github/license/mitoteam/mtsaver)
 ![GitHub code size](https://img.shields.io/github/languages/code-size/mitoteam/mtsaver)
 [![GitHub contributors](https://img.shields.io/github/contributors-anon/mitoteam/mtsaver)](https://github.com/mitoteam/mtsaver/graphs/contributors)
