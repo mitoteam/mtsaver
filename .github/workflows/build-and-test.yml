@@ -1,0 +1,15 @@
+name: Build&Tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  BuildAndTest:
+    uses: mitoteam/shared-actions/.github/workflows/goapp-build-and-test.yml@main
+    secrets: inherit
+    permissions:
+      contents: write
