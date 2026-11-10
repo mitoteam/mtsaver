@@ -56,6 +56,10 @@ version:
 clean:
 	rm -rf ${DIST_DIR}
 
+# Make sure tests are passed and all dists are built without errors
+.PHONY: bin-all
+bin-all: clean tests build-dist
+
 
 # Run all tests in root module and in known submodules
 .PHONY: tests
