@@ -17,7 +17,7 @@ fn_GO_BUILD = GOOS=$(1) GOARCH=$(2) go build -o ${DIST_DIR}/$(3) -ldflags=${LD_F
 7z a ${DIST_DIR}/${APP_NAME}-${APP_VERSION}-$(4).7z -mx9 ./${DIST_DIR}/$(3)
 
 
-all: clean build-dist
+build-all: clean build-dist
 
 .PHONY: build-dist
 build-dist: build-linux64 build-linux32 build-windows32 build-windows64
