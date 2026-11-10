@@ -3,7 +3,7 @@
 ![GitHub](https://img.shields.io/github/license/mitoteam/mtsaver)
 ![GitHub code size](https://img.shields.io/github/languages/code-size/mitoteam/mtsaver)
 [![GitHub contributors](https://img.shields.io/github/contributors-anon/mitoteam/mtsaver)](https://github.com/mitoteam/mtsaver/graphs/contributors)
-[![Build&Tests](https://github.com/mitoteam/mtsaver/actions/workflows/go.yml/badge.svg)](https://github.com/mitoteam/mtsaver/actions/workflows/go.yml)
+[![Build&Tests](https://github.com/mitoteam/mtsaver/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/mitoteam/mtsaver/actions/workflows/build-and-test.yml)
 
 [![GitHub Version](https://img.shields.io/github/v/release/mitoteam/mtsaver?logo=github)](https://github.com/mitoteam/mtsaver)
 [![GitHub Release Date](https://img.shields.io/github/release-date/mitoteam/mtsaver)](https://github.com/mitoteam/mtsaver/releases)
